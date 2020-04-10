@@ -13,7 +13,6 @@ git checkout --orphan web50/projects/2020/x/0
 # A file must be added or copied into the working dir or branch won't be created
 touch index.html
 git rm -rf .
-index.html
-git add index.html
+git add .
 git commit -m 'initial commit'
 ```
