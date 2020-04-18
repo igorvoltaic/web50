@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Mono&display=swap");
+body header nav {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 2em;
+}
+body header nav a {
+  text-decoration: none;
+  color: black;
+}
+body header nav a:hover {
+  color: black;
+  color: darkred;
+  text-decoration: none;
+}
+body header nav #writeupsMenu {
+  font-size: 0.6em;
+}
+body header nav #navHeader {
+  border-bottom: 2px solid;
+}
+body main h1 {
+  font-family: "Bowlby One SC", cursive;
+}
+body main h2 {
+  font-family: "Bowlby One SC", cursive;
+}
+body main p {
+  font-family: "Abhaya Libre", serif;
+}
+body main code {
+  font-family: "PT Mono", monospace;
+}
+
+/*# sourceMappingURL=style.css.map */

