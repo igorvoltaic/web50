@@ -1,0 +1,23 @@
+@media screen and (min-width: 768px) {
+ aside.col-md {
+  flex:0 1 20rem
+ }
+ @supports (position: sticky) or (position: -webkit-sticky) {
+  aside.col-md {
+   height:100vh;
+   overflow-y:auto;
+   top:0;
+   z-index:1020
+  }
+ }
+ @supports (position: sticky) {
+  aside.col-md {
+   position:sticky
+  }
+ }
+ @supports (position: -webkit-sticky) {
+  aside.col-md {
+   position:-webkit-sticky
+  }
+ }
+}

