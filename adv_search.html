@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Advanced Search</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="sm_logo_ctnr" id="sm_logo_ctnr" style="max-width:152px;min-width:152px">
+                <div class="logo_align">
+                    <span class="sm_logo" aria-hidden="true">
+                    </span>
+                </div>
+            </div>
+            <div class="lnks_ctnr">
+                <a class="top_lnk" href="index.html" target="_top">Web Search</a>
+                <a class="top_lnk" href="img_search.html" target="_top">Image Search</a>
+            </div>
+        </div>
+        <form class="search_form" action="https://google.com/search">
+            <div class="search_area">
+                <center>
+                    <div  id="logo_container">
+                        <img alt="Google" id="hplogo" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" width="272" height="92">
+                        <div class="logo-subtext"><span>Images</span></div>
+                    </div>
+                    <div class="searchbar_border">
+                        <div class="searchbar_ctnr">
+                            <div class="lens_ctnr">
+                                <div class="lens_vertpos">
+                                    <span class="lens">
+                                        <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="inpt_cntr">
+                                <div class="inpt_spacing inpt_size">
+                                </div>
+                                <input class="inpt_props inpt_size" maxlength="2048" name="q" type="text" aria-autocomplete="both" autocapitalize="off" 
+                                                                                                                         autocomplete="off" autocorrect="off" autofocus="" spellcheck="false" title="Search" value="" aria-label="Search">
+                            </div>
+                        </div>
+                    </div>
+                </center>
+                <div class="btns">  
+                    <center> 
+                        <button class="btn" aria-label="Google Search" name="tbm" value="isch" type="submit">Google Search</button>
+                        <!-- <input class="btn luck_btn" value="I'm Feeling Lucky" aria-label="I'm Feeling Lucky" name="btnI" type="submit" onclick="window.location.href='https://www.google.com/doodles/'"> -->  
+                    </center> 
+                </div>
+            </div>
+        </form>
+    </body>
+</html>
