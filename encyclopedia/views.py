@@ -1,3 +1,5 @@
+from django.http import Http404
+from django.views.defaults import page_not_found
 from django.shortcuts import render
 from markdown2 import markdown
 
@@ -11,6 +13,8 @@ def index(request):
 
 
 def entry(request, title):
+    if not util.get_entry(title):
+        return page_not_found(request, True, template_name='404.html')
     return render(request, "encyclopedia/entry.html", {
         "title": title,
         "entry": markdown(util.get_entry(title))
