@@ -1,7 +1,8 @@
 # [This is CS50W!](https://cs50.harvard.edu/web)
 ### CS50’s Web Programming with Python and JavaScript
+#
+Technologies:
 
-The course teaches:
 1. HTML, CSS
 2. Git
 3. Python
