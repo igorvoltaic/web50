@@ -1,4 +1,4 @@
-# [This is CS50W!](https://cs50.harvard.edu/web):
+# [This is CS50W!](https://cs50.harvard.edu/web)
 ### CS50’s Web Programming with Python and JavaScript
 
 The course teaches:
