@@ -1,5 +1,6 @@
 from django.views.defaults import page_not_found
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render
 from django import forms
 from django.urls import reverse
@@ -20,7 +21,6 @@ class NewEntryForm(forms.Form):
         return title
 
 
-
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
@@ -29,7 +29,7 @@ def index(request):
 
 def entry(request, title):
     if not util.get_entry(title):
-        return page_not_found(request, True, template_name="404.html")
+       return page_not_found(request, True, template_name="404.html")
     return render(request, "encyclopedia/entry.html", {
         "title": title,
         "entry": markdown(util.get_entry(title))
@@ -51,3 +51,19 @@ def create(request):
     return render(request, "encyclopedia/create.html", {
         "form": NewEntryForm()
     })
+
+
+def search(request):
+    q = request.GET['q']
+    if q.lower() in [x.lower() for x in util.list_entries()]:
+        return HttpResponseRedirect(reverse('entry', args=[q]))
+    entries = []
+    for word in [x for x in util.list_entries()]:
+        if q.lower() in word.lower():
+            entries.append(word)
+    return render(request, "encyclopedia/index.html", {
+        "results": True,
+        "entries": entries
+    })
+
+
