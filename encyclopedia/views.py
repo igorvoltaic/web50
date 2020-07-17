@@ -6,6 +6,7 @@ from django import forms
 from django.urls import reverse
 
 from markdown2 import markdown
+import random as rand
 
 from . import util
 
@@ -65,5 +66,13 @@ def search(request):
         "results": True,
         "entries": entries
     })
+
+def random(request):
+    title = rand.choice(util.list_entries())
+    return render(request, "encyclopedia/entry.html", {
+        "title": title,
+        "entry": markdown(util.get_entry(title))
+    })
+
 
 
