@@ -59,7 +59,7 @@ def search(request):
     if q.lower() in [x.lower() for x in util.list_entries()]:
         return HttpResponseRedirect(reverse('entry', args=[q]))
     entries = []
-    for word in [x for x in util.list_entries()]:
+    for word in util.list_entries():
         if q.lower() in word.lower():
             entries.append(word)
     return render(request, "encyclopedia/index.html", {
@@ -75,4 +75,19 @@ def random(request):
     })
 
 
+def edit(request, title):
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if title ==  form.data['title']:
+            title = form.data['title']
+        content = form.data['content']
+        util.save_entry(title, content)
+        return HttpResponseRedirect(reverse('entry', args=[title]))
+    data = {'title': title, 'content': util.get_entry(title)}
+    populated_form = NewEntryForm(initial=data)
+    return render(request, "encyclopedia/create.html", {
+        "edit": True,
+        "title": title,
+        "form": populated_form
+    })
 
