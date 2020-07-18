@@ -1,0 +1,3 @@
+#The Hitchhiker's Guide to the Galaxy
+##### novel
+The Hitchhiker's Guide to the Galaxy is the first of six books in the Hitchhiker's Guide to the Galaxy comedy science fiction "trilogy" by Douglas Adams. The novel is an adaptation of the first four parts of Adams' radio series of the same name. The novel was first published in London on 12 October 1979. [Wikipedia](https://en.wikipedia.org/wiki/The_Hitchhiker's_Guide_to_the_Galaxy_(novel))
