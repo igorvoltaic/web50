@@ -37,23 +37,6 @@ def entry(request, title):
     })
 
 
-def create(request):
-    if request.method == "POST":
-        form = NewEntryForm(request.POST)
-        if form.is_valid():
-            title = form.cleaned_data['title']
-            content = form.cleaned_data['content']
-            util.save_entry(title, content)
-            return HttpResponseRedirect(reverse('entry', args=[title]))
-        else:
-            return render(request, "encyclopedia/create.html", {
-                "form": form
-            })
-    return render(request, "encyclopedia/create.html", {
-        "form": NewEntryForm()
-    })
-
-
 def search(request):
     q = request.GET['q']
     if q.lower() in [x.lower() for x in util.list_entries()]:
@@ -75,14 +58,26 @@ def random(request):
     })
 
 
-def edit(request, title):
+def edit(request, title=None):
     if request.method == "POST":
         form = NewEntryForm(request.POST)
-        if title ==  form.data['title']:
+        if not title:
+            if form.is_valid():
+                title = form.cleaned_data['title']
+                content = form.cleaned_data['content']
+            else:
+                return render(request, "encyclopedia/create.html", {
+                    "form": form
+                })
+        elif title == form.data['title']:
             title = form.data['title']
-        content = form.data['content']
+            content = form.data['content']
         util.save_entry(title, content)
         return HttpResponseRedirect(reverse('entry', args=[title]))
+    if not title:
+        return render(request, "encyclopedia/create.html", {
+            "form": NewEntryForm()
+        })
     data = {'title': title, 'content': util.get_entry(title)}
     populated_form = NewEntryForm(initial=data)
     return render(request, "encyclopedia/create.html", {
