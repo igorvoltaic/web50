@@ -56,12 +56,12 @@ textarea {
 label {
     display: inline-block;
     margin-bottom: .5rem;
+    margin-top: 1rem;
     box-sizing: border-box;
 }
 #id_title {
     display: block;
     width: 50%;
-    height: calc(1.5em + .75rem + 2px);
     padding: .375rem .75rem;
     font-size: 1rem;
     font-weight: 400;
@@ -76,10 +76,9 @@ label {
 
 
 #id_content {
-    height: auto;
+    height: 500px;
     display: block;
     width: 50%;
-    height: calc(1.5em + .75rem + 2px);
     padding: .375rem .75rem;
     font-size: 1rem;
     font-weight: 400;
