@@ -15,11 +15,14 @@ class EntryForm(forms.Form):
     title = forms.CharField(label="Entry Title")
     content = forms.CharField(widget=forms.Textarea(),label="Entry Content")
 
+    def new(self, new):
+        self.new = None
+
     def clean_title(self):
         """ Check of the title already exists and raise an error if so.
         """
         title = self.cleaned_data['title']
-        if title.lower() in [x.lower() for x in util.list_entries()]:
+        if not self.new and title.lower() in [x.lower() for x in util.list_entries()]:
             raise forms.ValidationError("You already have such entry!")
         return title
 
@@ -80,17 +83,14 @@ def edit(request, title=None):
     """
     if request.method == "POST":
         form = EntryForm(request.POST)
-        if not title:
-            if form.is_valid():
-                title = form.cleaned_data['title']
-                content = form.cleaned_data['content']
-            else:
-                return render(request, "encyclopedia/edit.html", {
-                    "form": form
-                })
-        elif title == form.data['title']:
-            title = form.data['title']
-            content = form.data['content']
+        form.new = title  # for new Entry it keeps None value
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+        else:
+            return render(request, "encyclopedia/edit.html", {
+                "form": form
+            })
         util.save_entry(title, content)
         return HttpResponseRedirect(reverse('entry', args=[title]))
     if not title:
