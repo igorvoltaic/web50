@@ -3,5 +3,17 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% for listing in listings %}
+        <div class="lst-idx-ctr">
+            <div class="lst-idx-img">
+                <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
+                height=200px />
+            </div>
+            <div class="lst-idx-text">
+                <h3>{{ listing.name }}</h3>
+                <h5>Price: ${{ listing.price }}</h5>
+                <small>Created: {{ listing.created }}</small>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
