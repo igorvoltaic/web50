@@ -23,7 +23,7 @@ class Listing(models.Model):
             related_name="listings")
 
     def __str__(self):
-        return f"Listing {self.id} by {self.user.name}, created {self.created}"
+        return f"Listing {self.id} by {self.user.username}, created {self.created}"
 
 
 class Bid(models.Model):
@@ -45,7 +45,7 @@ class Comment(models.Model):
             related_name="comments")
 
     def __str__(self):
-        return f"Comment {self.id} by {self.user.name}"
+        return f"Comment {self.id} by {self.user.username}"
 
 
 class Watchlist(models.Model):
