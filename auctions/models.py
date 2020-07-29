@@ -5,6 +5,7 @@ from django.db import models
 class User(AbstractUser):
     pass
 
+
 class Category(models.Model):
     name = models.CharField(max_length=64)
 
@@ -17,13 +18,17 @@ class Listing(models.Model):
     description = models.CharField(max_length=1900)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     # img =
+
     category = models.ForeignKey(Category, on_delete=models.PROTECT,
             related_name="listings")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
 
+    def price(self):
+        return self.bids.latest("price").price
+
     def __str__(self):
-        return f"Listing {self.id} by {self.user.username}, created {self.created}"
+        return f"({self.id}) {self.name} by {self.user.username}, created {self.created}"
 
 
 class Bid(models.Model):
