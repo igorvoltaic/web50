@@ -2,12 +2,19 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
+
+
 class User(AbstractUser):
     pass
 
 
 class Category(models.Model):
     name = models.CharField(max_length=64)
+    # parent = models.ForeignKey(Category, on_delete=models.PROTECT,
+    #         related_name="children")
 
     def __str__(self):
         return f"{self.name}"
@@ -17,15 +24,15 @@ class Listing(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=1900)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    # img =
-
+    # image = models.ImageField(upload_to=user_directory_path)
     category = models.ForeignKey(Category, on_delete=models.PROTECT,
             related_name="listings")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
 
     def price(self):
-        return self.bids.latest("price").price
+        # Returns the highest bid associated with the listing
+        return self.bids.order_by("price").last().price
 
     def __str__(self):
         return f"({self.id}) {self.name} by {self.user.username}, created {self.created}"
