@@ -19,10 +19,9 @@ def categories(request):
     })
 
 def category(request, cat_id):
-    # return render(request, "auctions/categories.html", {
-    #     "categories": category.objects.all()
-    # })
-    return HttpResponse('OK! cat_id: ' + cat_id)
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.filter(category_id=cat_id)
+    })
 
 
 def watchlist(request):
