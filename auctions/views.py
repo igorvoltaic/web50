@@ -9,8 +9,32 @@ from .models import User, Listing, Bid, Comment, Category, Watchlist
 
 def index(request):
     return render(request, "auctions/index.html", {
-            "listings": Listing.objects.all()
-            })
+        "listings": Listing.objects.all()
+    })
+
+
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all()
+    })
+
+def category(request, cat_id):
+    # return render(request, "auctions/categories.html", {
+    #     "categories": category.objects.all()
+    # })
+    return HttpResponse('OK! cat_id: ' + cat_id)
+
+
+def watchlist(request):
+    return HttpResponse('OK')
+
+
+def create_listing(request):
+    return HttpResponse('OK')
+
+
+def listing(request):
+    return HttpResponse('OK')
 
 
 def login_view(request):
