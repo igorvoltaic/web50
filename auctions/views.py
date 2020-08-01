@@ -18,7 +18,7 @@ def categories(request):
         "categories": Category.objects.all()
     })
 
-def category(request, cat_id):
+def category(request, category_id):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.filter(category_id=cat_id)
     })
@@ -32,8 +32,10 @@ def create_listing(request):
     return HttpResponse('OK')
 
 
-def listing(request):
-    return HttpResponse('OK')
+def listing(request, listing_id):
+    return render(request, "auctions/index.html", {
+        "listing": Listing.objects.get(pk=listing_id)
+    })
 
 
 def login_view(request):
