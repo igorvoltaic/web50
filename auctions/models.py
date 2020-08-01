@@ -34,6 +34,10 @@ class Listing(models.Model):
         # Returns the highest bid associated with the listing
         return self.bids.order_by("price").last().price
 
+    def bids_count(self):
+        # Returns the number of bids associated with the listing
+        return self.bids.count()
+
     def __str__(self):
         return f"({self.id}) {self.name} by {self.user.username}, created {self.created}"
 

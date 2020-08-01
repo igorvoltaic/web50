@@ -1,20 +1,20 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+<h2>Listing: {{ listing.name }}</h2>
 
     {% for listing in listings %}
-        <div class="lst-idx-ctr">
-            <div class="lst-idx-img">
+        <div class="">
+            <div class="">
                 <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
-                height=200px />
+                height=500px />
             </div>
-            <div class="lst-idx-text">
-                <a href="{% url "listing" listing.id %}">
-                    <h3>{{ listing.name }}</h3>
-                </a>
-                <h5>Price: ${{ listing.price }}</h5>
+            <div class="">
+                watchlist
+            </div>
+            <div class="">
                 <p>Description: {{ listing.description }}</p>
+                <h2>Price: ${{ listing.price }}</h2>
                 <small>Created: {{ listing.created }}</small>
             </div>
         </div>
