@@ -8,6 +8,11 @@ def user_directory_path(instance, filename):
 
 
 class User(AbstractUser):
+
+    def watching_listings(self):
+        # Returns the number of returns number of items user is watching
+        return self.watching.count()
+
     pass
 
 
@@ -29,6 +34,9 @@ class Listing(models.Model):
             related_name="listings")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
+
+    def watching(self):
+        return self.in_watchlist.filter(user_id=self.user_id)
 
     def price(self):
         # Returns the highest bid associated with the listing
@@ -66,7 +74,7 @@ class Comment(models.Model):
 
 class Watchlist(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE,
-            related_name="in_watchlists")
+            related_name="in_watchlist")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-            related_name="watching_items")
+            related_name="watching")
 
