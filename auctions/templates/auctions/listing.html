@@ -2,21 +2,70 @@
 
 {% block body %}
 <h2>Listing: {{ listing.name }}</h2>
-
-    {% for listing in listings %}
         <div class="">
             <div class="">
+                {% if listing.watching %}
+                <a href="" class="badge badge-primary" id="add-watchlist">watching</a>
+                {% else %}
+                <a href="" class="badge badge-secondary" id="add-watchlist">to watchlist</a>
+                {% endif %}
+            </div>
+            <div class="lst-img">
                 <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
                 height=500px />
-            </div>
-            <div class="">
-                watchlist
             </div>
             <div class="">
                 <p>Description: {{ listing.description }}</p>
                 <h2>Price: ${{ listing.price }}</h2>
                 <small>Created: {{ listing.created }}</small>
             </div>
+        <script type="text/javascript">
+            var listingId = "{{ listing.id }}";
+        </script>
+        {% block javascript %}
+            <!-- Update watchlist elements onClick over the button adding number of -->
+            <!-- watched items on top and changing text for watched item -->
+            <script>
+                var HttpClient = function() {
+                    this.get = function(aUrl, aCallback) {
+                        var req = new XMLHttpRequest();
+                        req.onreadystatechange = function() { 
+                            if (req.readyState == 4 && req.status == 200)
+                                aCallback(req.responseText);
+                        }
+
+                        req.open( "GET", aUrl, true );            
+                        req.send( null );
+                    }
+                }
+                var url = window.location.host; 
+                var client = new HttpClient();
+                let watchNum = document.getElementById("watchlist-num");
+                let addWatchlist = document.getElementById("add-watchlist");
+                addWatchlist.onclick = function watch() {
+                    event.preventDefault();
+                    client.get('http://' + url + '/add-watchlist/' + listingId, function(data) {
+                        console.log(data);
+                        if (data === 'false') {
+                            addWatchlist.classList = "badge badge-primary";
+                            addWatchlist.text = "watching";
+                            if (Number(watchNum.textContent) > 0) {
+                                watchNum.textContent = Number(watchNum.textContent) + 1;
+                            } else {
+                                watchNum.innerText = "1";
+                            }
+                        } else {
+                            addWatchlist.classList = "badge badge-secondary";
+                            addWatchlist.text = "to watchlist";
+                            if (Number(watchNum.textContent) > 1 ) {
+                                watchNum.textContent = Number(watchNum.textContent) - 1;
+                            } else {
+                                watchNum.innerText = "";
+                            }
+                        }
+                    });
+                }
+            </script>
+        {% endblock %}
         </div>
-    {% endfor %}
 {% endblock %}
