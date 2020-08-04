@@ -35,9 +35,6 @@ class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
 
-    def watching(self):
-        return self.in_watchlist.filter(user_id=self.user_id)
-
     def price(self):
         # Returns the highest bid associated with the listing
         return self.bids.order_by("price").last().price
