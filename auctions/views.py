@@ -38,7 +38,8 @@ def watchlist(request):
 
 @login_required
 def add_watchlist(request, listing_id):
-    # Check the watchlist, add/remove item and return current state to JS
+    """ Check the watchlist, add/remove item and return current state to JS """
+
     watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
     if watched:
         Watchlist.objects.get(pk=watched[0].id).delete()
@@ -56,8 +57,23 @@ def create_listing(request):
 
 
 def listing(request, listing_id):
+    watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
+    if request.method == "POST":
+        # Make a bid
+        price = float(request.POST["price"])
+        if price < Listing.objects.get(pk=listing_id).top_bid().price:
+            return render(request, "auctions/listing.html", {
+                "listing": Listing.objects.get(pk=listing_id),
+                "watched": watched,
+                "message": "You bid cannot be lower than current price"
+            })
+        bid = Bid(user=get_user(request), listing_id=listing_id, price=price)
+        bid.save()
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.get(pk=listing_id)
+        "listing": Listing.objects.get(pk=listing_id),
+        "watched": watched
     })
 
 
