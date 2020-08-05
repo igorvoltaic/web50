@@ -35,9 +35,9 @@ class Listing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
 
-    def price(self):
+    def top_bid(self):
         # Returns the highest bid associated with the listing
-        return self.bids.order_by("price").last().price
+        return self.bids.order_by("price").last()
 
     def bids_count(self):
         # Returns the number of bids associated with the listing

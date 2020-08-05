@@ -13,7 +13,7 @@
                 <a href="{% url "listing" listing.id %}">
                     <h3>{{ listing.name }}</h3>
                 </a>
-                <h5>Price: ${{ listing.price }}</h5>
+                <h5>Price: ${{ listing.top_bid.price }}</h5>
                 <p>Description: {{ listing.description }}</p>
                 <small>Created: {{ listing.created }}</small>
             </div>

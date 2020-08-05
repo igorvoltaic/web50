@@ -29,8 +29,15 @@ body {
 a#add-watchlist {
     padding: 5px;
 }
-element {
+
+.details {
+    margin-top: 2em;
 }
+
+.price {
+    margin-bottom: 1em;
+}
+
 
 /* a.badge:focus, a.badge:hover { */
 /*     color: #fff; */
