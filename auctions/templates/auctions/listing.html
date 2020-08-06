@@ -46,6 +46,18 @@
             <small>Category: <b>{{ listing.category }}</b></small><br>
             <small>Created: <b>{{ listing.created }}</b></small><br>
             <small>Listed by: <b>{{ listing.user.username }}</b></small>
+            <h5 class="details">Comments:</h5>
+            <ol>
+            {% for comment in listing.comments.all %}
+                <li class="comment">{{ comment.text }}<br><small> by <b>{{ comment.user }}</b></small>
+            {% endfor %}
+            </ol>
+            <form action="{% url "comment" %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" value="{{listing.id}}">
+                <textarea id="comment-text" name="text" class=""></textarea><br />
+                <input type="submit" value="Leave Comment" class="sbmt-button">
+            </form>
         </div>
     <script type="text/javascript">
         var listingId = "{{ listing.id }}";

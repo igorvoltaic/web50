@@ -23,11 +23,13 @@ def closed_listings(request):
 
 
 def categories(request):
+    # Returns category list
     return render(request, "auctions/categories.html", {
         "categories": Category.objects.all()
     })
 
 def category(request, category_id):
+    # Returns listings in a category
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.filter(category_id=category_id, closed=False),
         "heading": "Category: " + Category.objects.get(pk=category_id).name
@@ -37,8 +39,7 @@ def category(request, category_id):
 @login_required
 def watchlist(request):
     return render(request, "auctions/index.html", {
-        "listings": [l.listing for l in
-            Watchlist.objects.filter(user_id=get_user(request).id)],
+        "listings": [l.listing for l in Watchlist.objects.filter(user_id=get_user(request).id)],
         "heading": "Watched Listings"
     })
 
@@ -102,6 +103,19 @@ def listing(request, listing_id):
         "listing": Listing.objects.get(pk=listing_id),
         "watched": watched
     })
+
+def comment(request):
+    if request.method == "POST":
+        user = get_user(request)
+        if user.is_anonymous:
+            return render(request, "auctions/login.html", {
+                "message": "Please login to make a bid"
+            })
+        listing_id = request.POST["listing_id"]
+        text = request.POST["text"]
+        comment = Comment(user=user, text=text, listing_id=listing_id)
+        comment.save()
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
 
 def login_view(request):
