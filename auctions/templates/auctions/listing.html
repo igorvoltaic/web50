@@ -5,9 +5,9 @@
         <div class="">
             <div class="">
                 {% if watched %}
-                <a href="" class="badge badge-primary" id="add-watchlist">watching</a>
+                <a href="" class="" id="add-watchlist">watching</a>
                 {% else %}
-                <a href="" class="badge badge-secondary" id="add-watchlist">to watchlist</a>
+                <a href="" class="" id="add-watchlist">to watchlist</a>
                 {% endif %}
             </div>
             <div class="lst-img">
@@ -21,15 +21,15 @@
                 <form action="{% url "listing" listing.id %}" method="post">
                     {% csrf_token %}
                     <label for="bid-input">{{ listing.bids_count }} bid(s) so far. Highest bidder: <b>{{ listing.top_bid.user.username }}</b></label><br>
-                    <input id="bid-input" name="price" type="number" step="0.01">
-                    <input type="submit" value="Bid">
+                    <input id="bid-input" name="price" type="number" step="0.01" class="form-input">
+                    <input type="submit" value="Bid" class="sbmt-button">
                 </form>
                 {% elif listing.top_bid.user_id != user.id and user.id == listing.user_id %}
                 <form action="/close" method="post">
                     {% csrf_token %}
                     <div>Highest bidder: <b>{{ listing.top_bid.user.username }}</b></div>
                     <br />
-                    <input type="submit" value="Close">
+                    <input type="submit" value="Close" class="">
                 </form>
                 {% else %}
                 <strong>No bids so far :(</strong>
@@ -59,8 +59,8 @@
                 }
                 var url = window.location.host; 
                 var client = new HttpClient();
-                let watchNum = document.getElementById("watchlist-num");
-                let addWatchlist = document.getElementById("add-watchlist");
+                var watchNum = document.getElementById("watchlist-num");
+                var addWatchlist = document.getElementById("add-watchlist");
                 addWatchlist.onclick = function watch() {
                     event.preventDefault();
                     client.get('http://' + url + '/add-watchlist/' + listingId, function(data) {

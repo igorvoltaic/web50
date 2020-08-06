@@ -27,11 +27,11 @@
                 <li class="nav-item">
                     <a id="watchlist-link" class="nav-link" href="{% url 'watchlist' %}">Watchlist
                         {% if user.watching_listings %}
-                        <span id="watchlist-num" class="badge badge-primary">
+                        <span id="watchlist-num" class="">
                             {{ user.watching_listings }}
                         </span>
                         {% else %}
-                        <span id="watchlist-num" class="badge badge-primary"></span>
+                        <span id="watchlist-num" class=""></span>
                         {% endif %}
                     </a>
                 </li>
