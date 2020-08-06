@@ -10,8 +10,15 @@ from .models import User, Listing, Bid, Comment, Category, Watchlist
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all(),
+        "listings": Listing.objects.filter(closed=False),
         "heading": "Active Listings"
+    })
+
+
+def closed_listings(request):
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.filter(closed=True),
+        "heading": "Closed Listings"
     })
 
 
@@ -22,7 +29,7 @@ def categories(request):
 
 def category(request, category_id):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.filter(category_id=category_id),
+        "listings": Listing.objects.filter(category_id=category_id, closed=False),
         "heading": "Category: " + Category.objects.get(pk=category_id).name
     })
 
@@ -56,9 +63,29 @@ def create_listing(request):
     return HttpResponse('OK')
 
 
+@login_required
+def close_listing(request, listing_id):
+    watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        if get_user(request).id != listing.user_id:
+            return render(request, "auctions/listing.html", {
+                "listing": Listing.objects.get(pk=listing_id),
+                "watched": watched,
+                "message": "You cannot close this listing"
+            })
+        listing.closed = True
+        listing.save()
+    return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
+
 def listing(request, listing_id):
     watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
     if request.method == "POST":
+        if get_user(request).is_anonymous:
+            return render(request, "auctions/login.html", {
+                "message": "Please login to make a bid"
+            })
         # Make a bid
         price = float(request.POST["price"])
         if price < Listing.objects.get(pk=listing_id).top_bid().price:

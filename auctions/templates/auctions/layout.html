@@ -27,7 +27,7 @@
                 <li class="nav-item">
                     <a id="watchlist-link" class="nav-link" href="{% url 'watchlist' %}">Watchlist
                         {% if user.watching_listings %}
-                        <span id="watchlist-num" class="">
+                        <span id="watchlist-num" class="watchlist active-wl">
                             {{ user.watching_listings }}
                         </span>
                         {% else %}
@@ -49,6 +49,9 @@
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </li>
             {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link gray" href="{% url 'closed_listings' %}">Closed Listings</a>
+                </li>
         </ul>
         <hr>
         {% block body %}

@@ -5,9 +5,9 @@
         <div class="">
             <div class="">
                 {% if watched %}
-                <a href="" class="" id="add-watchlist">watching</a>
+                <a href="" class="watchlist active-wl" id="add-watchlist">watching</a>
                 {% else %}
-                <a href="" class="" id="add-watchlist">to watchlist</a>
+                <a href="" class="watchlist inactive-wl" id="add-watchlist">to watchlist</a>
                 {% endif %}
             </div>
             <div class="lst-img">
@@ -17,25 +17,31 @@
             <div class="">
                 <p>Description: {{ listing.description }}</p>
                 <h2 class="price">Price: ${{ listing.top_bid.price }}</h2>
-                {% if user.id != listing.user_id %}
+                {% if listing.closed is True %}
+                    <div>Winner: <b>{{ listing.top_bid.user.username }}</b></div>
+                {% elif user.id != listing.user_id %}
                 <form action="{% url "listing" listing.id %}" method="post">
+                    {% if message %}
+                    <div class="alert-msg">{{ message }}</div>
+                    {% endif %}
                     {% csrf_token %}
                     <label for="bid-input">{{ listing.bids_count }} bid(s) so far. Highest bidder: <b>{{ listing.top_bid.user.username }}</b></label><br>
                     <input id="bid-input" name="price" type="number" step="0.01" class="form-input">
                     <input type="submit" value="Bid" class="sbmt-button">
                 </form>
                 {% elif listing.top_bid.user_id != user.id and user.id == listing.user_id %}
-                <form action="/close" method="post">
+                <form action="{% url "close" listing.id %}" method="post">
                     {% csrf_token %}
                     <div>Highest bidder: <b>{{ listing.top_bid.user.username }}</b></div>
                     <br />
-                    <input type="submit" value="Close" class="">
+                    <input type="submit" value="Close" class="sbmt-button">
                 </form>
                 {% else %}
                 <strong>No bids so far :(</strong>
                 {% endif %}
                 <h5 class="details">Details:</h5>
-                <small>Created: {{ listing.created }}</small><br>
+                <small>Category: <b>{{ listing.category }}</b></small><br>
+                <small>Created: <b>{{ listing.created }}</b></small><br>
                 <small>Listed by: <b>{{ listing.user.username }}</b></small>
             </div>
         <script type="text/javascript">
@@ -66,19 +72,21 @@
                     client.get('http://' + url + '/add-watchlist/' + listingId, function(data) {
                         console.log(data);
                         if (data === 'false') {
-                            addWatchlist.classList = "badge badge-primary";
+                            addWatchlist.classList = "watchlist active-wl";
                             addWatchlist.text = "watching";
                             if (Number(watchNum.textContent) > 0) {
                                 watchNum.textContent = Number(watchNum.textContent) + 1;
                             } else {
+                                watchNum.classList = "watchlist active-wl";
                                 watchNum.innerText = "1";
                             }
                         } else {
-                            addWatchlist.classList = "badge badge-secondary";
+                            addWatchlist.classList = "watchlist inactive-wl";
                             addWatchlist.text = "to watchlist";
                             if (Number(watchNum.textContent) > 1 ) {
                                 watchNum.textContent = Number(watchNum.textContent) - 1;
                             } else {
+                                watchNum.classList = ""
                                 watchNum.innerText = "";
                             }
                         }

@@ -14,6 +14,9 @@
                     <h3>{{ listing.name }}</h3>
                 </a>
                 <h5>Price: ${{ listing.top_bid.price }}</h5>
+                {% if listing.closed %}
+                <h6>Winner: {{listing.top_bid.user.username}}</h6>
+                {% endif %}
                 <p>Description: {{ listing.description }}</p>
                 <small>Created: {{ listing.created }}</small>
             </div>

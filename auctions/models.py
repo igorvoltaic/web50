@@ -29,6 +29,7 @@ class Listing(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=1900)
     created = models.DateTimeField(auto_now_add=True, editable=False)
+    closed = models.BooleanField(default=False)
     # image = models.ImageField(upload_to=user_directory_path)
     category = models.ForeignKey(Category, on_delete=models.PROTECT,
             related_name="listings")
