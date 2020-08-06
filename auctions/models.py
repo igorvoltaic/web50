@@ -32,17 +32,13 @@ class Listing(models.Model):
     closed = models.BooleanField(default=False)
     # image = models.ImageField(upload_to=user_directory_path)
     category = models.ForeignKey(Category, on_delete=models.PROTECT,
-            related_name="listings")
+            related_name="listings", blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE,
             related_name="listings")
 
     def top_bid(self):
         # Returns the highest bid associated with the listing
         return self.bids.order_by("price").last()
-
-    def bids_count(self):
-        # Returns the number of bids associated with the listing
-        return self.bids.count()
 
     def __str__(self):
         return f"({self.id}) {self.name} by {self.user.username}, created {self.created}"

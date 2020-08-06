@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login, logout, get_user
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -39,7 +39,7 @@ def category(request, category_id):
 @login_required
 def watchlist(request):
     return render(request, "auctions/index.html", {
-        "listings": [l.listing for l in Watchlist.objects.filter(user_id=get_user(request).id)],
+        "listings": [l.listing for l in Watchlist.objects.filter(user_id=request.user.id)],
         "heading": "Watched Listings"
     })
 
@@ -47,74 +47,74 @@ def watchlist(request):
 @login_required
 def add_watchlist(request, listing_id):
     """ Check the watchlist, add/remove item and return current state to JS """
-
-    watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
+    watched = Watchlist.objects.filter(user=request.user, listing_id=listing_id).first()
     if watched:
-        Watchlist.objects.get(pk=watched[0].id).delete()
+        Watchlist.objects.get(pk=watched.id).delete()
         return JsonResponse(True, safe=False)
     else:
-        watch = Watchlist(listing_id=listing_id,
-                user_id=get_user(request).id)
-        watch.save()
+        Watchlist.objects.create(listing_id=listing_id, user=request.user)
         return JsonResponse(False, safe=False)
 
 
 @login_required
 def create_listing(request):
-    return HttpResponse('OK')
+    if request.method == "POST":
+        name = request.POST["name"]
+        description = request.POST["description"]
+        category = request.POST.get("category", None)
+        price = (request.POST["price"])
+        listing = Listing.objects.create(user=request.user, name=name, description=description, category=category)
+        Bid.objects.create(user=request.user, listing=listing, price=price)
+        return HttpResponseRedirect(reverse("listing", args=[listing.id]))
+    return render(request, "auctions/create.html", {
+        "categories": Category.objects.all()
+    })
 
 
 @login_required
 def close_listing(request, listing_id):
-    watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
     listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
-        if get_user(request).id != listing.user_id:
+        if request.user.id != listing.user_id:
             return render(request, "auctions/listing.html", {
-                "listing": Listing.objects.get(pk=listing_id),
-                "watched": watched,
+                "listing": listing,
+                "watched": listing.in_watchlist.filter(user_id=request.user.id).first(),
                 "message": "You cannot close this listing"
             })
         listing.closed = True
-        listing.save()
+        listing.save(update_fields=['closed'])
     return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
 
 def listing(request, listing_id):
-    watched = Watchlist.objects.filter(user_id=get_user(request).id, listing_id=listing_id)
-    if request.method == "POST":
-        if get_user(request).is_anonymous:
-            return render(request, "auctions/login.html", {
-                "message": "Please login to make a bid"
-            })
-        # Make a bid
-        price = float(request.POST["price"])
-        if price < Listing.objects.get(pk=listing_id).top_bid().price:
-            return render(request, "auctions/listing.html", {
-                "listing": Listing.objects.get(pk=listing_id),
-                "watched": watched,
-                "message": "You bid cannot be lower than current price"
-            })
-        bid = Bid(user=get_user(request), listing_id=listing_id, price=price)
-        bid.save()
-        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
-
+    listing = Listing.objects.get(pk=listing_id)
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.get(pk=listing_id),
-        "watched": watched
+        "listing": listing,
+        "watched": listing.in_watchlist.filter(user_id=request.user.id).first()
     })
 
+
+@login_required
+def bid(request, listing_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=listing_id)
+        price = float(request.POST["price"])
+        if price < listing.top_bid().price:
+            return render(request, "auctions/listing.html", {
+                "listing": listing,
+                "watched": listing.in_watchlist.filter(user_id=request.user.id).first(),
+                "message": "You bid cannot be lower than current price"
+            })
+        Bid.objects.create(user=request.user, listing=listing, price=price)
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
+
+@login_required
 def comment(request):
     if request.method == "POST":
-        user = get_user(request)
-        if user.is_anonymous:
-            return render(request, "auctions/login.html", {
-                "message": "Please login to make a bid"
-            })
         listing_id = request.POST["listing_id"]
         text = request.POST["text"]
-        comment = Comment(user=user, text=text, listing_id=listing_id)
-        comment.save()
+        Comment.objects.create(user=request.user, text=text, listing_id=listing_id)
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
 

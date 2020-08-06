@@ -49,8 +49,6 @@ body {
 
 .watchlist, span#watchlist-num {
     padding: 5px;
-    /* color: #fff; */
-    /* background-color: #007bff; */
     padding: .25em .4em;
     font-size: 75%;
     font-weight: 700;
@@ -58,7 +56,7 @@ body {
     text-align: center;
     vertical-align: baseline;
     border-radius: .25rem;
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 
@@ -95,6 +93,7 @@ body {
 }
 
 .sbmt-button {
+    margin-left: .75em;
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
@@ -121,4 +120,41 @@ body {
     border: 1px solid transparent;
     border-radius: .25rem;
     width: fit-content;
+}
+
+
+.comment-text {
+    overflow: auto;
+    resize: vertical;
+	display: block;
+	width: 30em;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #495057;
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+    margin-bottom: .1em;
+    padding: 10px;
+}
+
+ol.comments {
+    padding-left: 2em;
+    margin-bottom: 2em;
+}
+
+li.comment {
+    margin-bottom: 1em;
+    line-height: 1;
+}
+
+li.comment > small {
+    font-weight: 100;
+    color: #8e99a6;
+}
+
+.sbmt-comment {
+    margin-top: 1em;
+    margin-left: 0;
 }
