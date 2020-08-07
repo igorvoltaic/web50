@@ -33,7 +33,11 @@
                 <div class="alert-msg">{{ message }}</div>
                 {% endif %}
                 {% csrf_token %}
-                <label for="bid-input">{{ listing.bids.count }} bid(s) so far. Highest bidder: <b>{{ listing.top_bid.user.username }}</b></label><br>
+                {% if listing.top_bid.user_id == listing.user_id %}
+                    <label for="bid-input">No bids so far, be the first bidder!</label><br>
+                {% else %}
+                    <label for="bid-input">{{ listing.bids.count }} bid(s) so far. Highest bidder: <b>{{ listing.top_bid.user.username }}</b></label><br>
+                {% endif %}
                 <input id="bid-input" name="price" type="number" step="0.01" class="form-input">
                 <input type="submit" value="Bid" class="sbmt-button">
             </form>

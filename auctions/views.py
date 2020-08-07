@@ -59,19 +59,16 @@ def add_watchlist(request, listing_id):
 @login_required
 def create_listing(request):
     if request.method == "POST":
-        image_file = request.FILES.get("image_file", None)
         image_url = request.POST.get("image_url", None)
         name = request.POST["name"]
         description = request.POST["description"]
-        category = request.POST.get("category", None)
+        category_name =  request.POST.get("category", None).lower()
+        category = Category.objects.filter(name=category_name).first()
+        if not category:
+            category = Category.objects.create(name=category_name, image_url=request.POST.get("cat_image_url", None))
         price = (request.POST["price"])
-        listing = Listing.objects.create(
-                user=request.user,
-                name=name,
-                description=description,
-                category=category,
-                image_file=image_file,
-                image_url=image_url)
+        listing = Listing.objects.create(user=request.user, name=name,
+                description=description, category=category, image_url=image_url)
         Bid.objects.create(user=request.user, listing=listing, price=price)
         return HttpResponseRedirect(reverse("listing", args=[listing.id]))
     return render(request, "auctions/create.html", {
