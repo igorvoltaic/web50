@@ -14,8 +14,13 @@
             {% endif %}
         </div>
         <div class="lst-img">
-            <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
-            height=500px />
+            {% if listing.image_file %}
+                <img src="{{ listing.image_file.url | default_if_none:'#' }}" height=500px />
+            {% elif listing.image_url %}
+                <img src="{{ listing.image_url | default_if_none:'#' }}" height=500px />
+            {% else %}
+                <p>no image</p>
+            {% endif %}
         </div>
         <div class="">
             <p>Description: {{ listing.description }}</p>

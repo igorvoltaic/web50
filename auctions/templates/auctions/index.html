@@ -6,8 +6,13 @@
     {% for listing in listings %}
         <div class="lst-idx-ctr">
             <div class="lst-idx-img">
-                <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
-                height=200px />
+                {% if listing.image_file %}
+                    <img src="{{ listing.image_file.url }}" height="200px" />
+                {% elif listing.image_url %}
+                    <img src="{{ listing.image_url }}" height="200px" />
+                {% else %}
+                    <img src="#" height="200px" />
+                {% endif %}
             </div>
             <div class="lst-idx-text">
                 <a href="{% url "listing" listing.id %}">

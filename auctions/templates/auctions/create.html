@@ -5,11 +5,18 @@
     <div class="">
         <div class="lst-img">
             <img src="https://pbs.twimg.com/media/Cqg9A6wUIAAIRTP.jpg"
-            height=500px />
+            height=150px alt="Wazzup!.."/>
         </div>
         <div class="">
-            <form action="{% url "create" %}" method="post">
+            <form action="{% url "create" %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div class="form-group">
+                    <label for="lst-img">Upload listing image:</label>
+                    <input type="file" name="image_file" class="form-control-file" id="lst-img">
+                </div>
+                <strong>OR</strong>
+                <label for="lst-url" class="lst-lbl">enter image URL:</label>
+                <input id="lst-url" type="text" name="image_url" value="" class="crt-lst">
                 <label for="lst-name" class="lst-lbl">Enter listing name:</label>
                 <input id="lst-name" type="text" name="name" value="" class="crt-lst">
                 <label for="lst-desc" class="lst-lbl">Enter listing description:</label>
@@ -21,7 +28,7 @@
                     <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}
                 </select> 
-                <label for="lst-price" class="lst-lbl">Choose category from the list:</label>
+                <label for="lst-price" class="lst-lbl">Enter price</label>
                 <input id="lst-price" name="price" type="number" step="0.01" class="crt-lst">
                 <input type="submit" value="Create" class="sbmt-button sbmt-comment">
             </form>
