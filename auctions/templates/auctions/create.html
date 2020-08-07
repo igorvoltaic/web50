@@ -10,16 +10,19 @@
         <div class="">
             <form action="{% url "create" %}" method="post">
                 {% csrf_token %}
-                <input type="text" name="name" value="" class="comment-text">
-                <textarea id="comment-text" name="description" class="comment-text"></textarea>
-                <label for="lst-cat">Choose category from the list:</label>
-                <select name="category" id="lst-cat" class="comment-text">
+                <label for="lst-name" class="lst-lbl">Enter listing name:</label>
+                <input id="lst-name" type="text" name="name" value="" class="crt-lst">
+                <label for="lst-desc" class="lst-lbl">Enter listing description:</label>
+                <textarea id="lst-desc" name="description" class="comment-text"></textarea>
+                <label for="lst-cat" class="lst-lbl">Choose category from the list:</label>
+                <select name="category" id="lst-cat" class="crt-sel crt-lst">
                     <option value="" selected disabled>{{ category.name }}</option>
                     {% for category in categories %}
                     <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}
                 </select> 
-                <input id="bid-input" name="price" type="number" step="0.01" class="form-input">
+                <label for="lst-price" class="lst-lbl">Choose category from the list:</label>
+                <input id="lst-price" name="price" type="number" step="0.01" class="crt-lst">
                 <input type="submit" value="Create" class="sbmt-button sbmt-comment">
             </form>
         </div>
