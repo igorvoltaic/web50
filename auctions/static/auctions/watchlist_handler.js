@@ -5,14 +5,13 @@ const watchNum = document.querySelector('#watchlist-num');
 const addWatchlist = document.querySelector('#add-watchlist');
 document.addEventListener('DOMContentLoaded', function() {
     addWatchlist.onclick = function() {
-        event.preventDefault()
         fetch('http://127.0.0.1:8000/add-watchlist/' + listingId)
         .then(response => response.json())
         .then(data => {
             const inWatchlist = data.inwl
             if (!inWatchlist) {
                 addWatchlist.classList = "watchlist active-wl";
-                addWatchlist.text = "watching";
+                addWatchlist.innerText = "watching";
                 if (Number(watchNum.textContent) > 0) {
                     watchNum.textContent = Number(watchNum.textContent) + 1;
                 } else {
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 addWatchlist.classList = "watchlist inactive-wl";
-                addWatchlist.text = "to watchlist";
+                addWatchlist.innerText = "to watchlist";
                 if (Number(watchNum.textContent) > 1 ) {
                     watchNum.textContent = Number(watchNum.textContent) - 1;
                 } else {

@@ -50,14 +50,15 @@ body {
 
 .watchlist, span#watchlist-num {
     padding: 5px;
-    padding: .25em .4em;
     font-size: 75%;
     font-weight: 700;
     line-height: 1;
     text-align: center;
     vertical-align: baseline;
     border-radius: .25rem;
-    text-decoration: none !important;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
 }
 
 
