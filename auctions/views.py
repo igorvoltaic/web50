@@ -50,10 +50,10 @@ def add_watchlist(request, listing_id):
     watched = Watchlist.objects.filter(user=request.user, listing_id=listing_id).first()
     if watched:
         Watchlist.objects.get(pk=watched.id).delete()
-        return JsonResponse(True, safe=False)
+        return JsonResponse({'inwl':True})
     else:
         Watchlist.objects.create(listing_id=listing_id, user=request.user)
-        return JsonResponse(False, safe=False)
+        return JsonResponse({'inwl': False})
 
 
 @login_required

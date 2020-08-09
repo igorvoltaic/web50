@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block body %}
     {% if listing.top_bid.user_id == user.id and listing.closed %}
@@ -68,55 +69,9 @@
                 <input type="submit" value="Leave Comment" class="sbmt-button sbmt-comment">
             </form>
         </div>
-    <script type="text/javascript">
-        var listingId = "{{ listing.id }}";
-    </script>
-    {% block javascript %}
-        <!-- Update watchlist elements onClick over the button adding number of -->
-        <!-- watched items on top and changing text for watched item -->
-        <script>
-            var HttpClient = function() {
-                this.get = function(aUrl, aCallback) {
-                    var req = new XMLHttpRequest();
-                    req.onreadystatechange = function() { 
-                        if (req.readyState == 4 && req.status == 200)
-                            aCallback(req.responseText);
-                    }
-
-                    req.open( "GET", aUrl, true );            
-                    req.send( null );
-                }
-            }
-            var url = window.location.host; 
-            var client = new HttpClient();
-            var watchNum = document.getElementById("watchlist-num");
-            var addWatchlist = document.getElementById("add-watchlist");
-            addWatchlist.onclick = function watch() {
-                event.preventDefault();
-                client.get('http://' + url + '/add-watchlist/' + listingId, function(data) {
-                    console.log(data);
-                    if (data === 'false') {
-                        addWatchlist.classList = "watchlist active-wl";
-                        addWatchlist.text = "watching";
-                        if (Number(watchNum.textContent) > 0) {
-                            watchNum.textContent = Number(watchNum.textContent) + 1;
-                        } else {
-                            watchNum.classList = "watchlist active-wl";
-                            watchNum.innerText = "1";
-                        }
-                    } else {
-                        addWatchlist.classList = "watchlist inactive-wl";
-                        addWatchlist.text = "to watchlist";
-                        if (Number(watchNum.textContent) > 1 ) {
-                            watchNum.textContent = Number(watchNum.textContent) - 1;
-                        } else {
-                            watchNum.classList = ""
-                            watchNum.innerText = "";
-                        }
-                    }
-                });
-            }
+        <script type="text/javascript">
+            var listingId = "{{ listing.id }}";
         </script>
-    {% endblock %}
+        <script type="text/javascript" src="{% static 'auctions/watchlist_handler.js' %}"></script>
     </div>
 {% endblock %}
