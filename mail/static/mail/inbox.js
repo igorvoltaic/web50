@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
     document.querySelector('#compose').addEventListener('click', compose_email);
-    document.querySelector('#compose-form').onsubmit = sendmail; 
+    document.querySelector('#compose-form').onsubmit = sendmail;
 
     // By default, load the inbox
     load_mailbox('inbox');
@@ -21,6 +21,7 @@ function compose_email() {
     // Show compose view and hide other views
     document.querySelector('#emails-view').style.display = 'none';
     document.querySelector('#compose-view').style.display = 'block';
+    document.querySelector('#reader-view').style.display = 'none';
 
     // Clear out composition fields
     document.querySelector('#compose-recipients').value = '';
@@ -28,16 +29,31 @@ function compose_email() {
     document.querySelector('#compose-body').value = '';
 }
 
+function read_email(sender, recipients, subject, timestamp, body) {
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#reader-view').style.display = 'block';
+
+    // Clear out composition fields
+    document.querySelector('#reader-sender').innerHTML = `<b>From:</b> ${sender}`;
+    document.querySelector('#reader-recipients').innerHTML = `<b>To:</b> ${recipients}`;
+    document.querySelector('#reader-subject').innerHTML = `<b>Subject:</b> ${subject}`;
+    document.querySelector('#reader-timestamp').innerHTML = `<b>Timestamp:</b> ${timestamp}`;
+    document.querySelector('#reader-body').innerHTML = body;
+}
+
 function load_mailbox(mailbox) {
-    //fetch emails
-    show_mails(mailbox)
 
     // Show the mailbox and hide other views
     document.querySelector('#emails-view').style.display = 'block';
     document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#reader-view').style.display = 'none';
 
     // Show the mailbox name
     document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+    //fetch emails
+    show_mails(mailbox)
 
     // Add the current state to the history
     // history.pushState({mailbox: mailbox}, "", `${mailbox}`);
@@ -51,21 +67,31 @@ function show_mails(name) {
         //Create and append element for each email
         emails.forEach(emails => {
             const element = document.createElement('div');
-            element.className = 'emails read';
+            // element.className = 'emails read';
+            element.className = 'shadow p-3 mb-1 read rounded border';
             element.innerHTML = emails['sender'] + '  :  ' + emails['subject'] + '  :  ' + emails['timestamp'];
             element.addEventListener('click', function() {
                 if (!emails['read']) {
-                    fetch('/emails/' + emails['id'], {
+                    fetch(`/emails/${emails['id']}`, {
                         method: 'PUT',
                         body: JSON.stringify({
                             read: true
                         })
                     })
-                    element.className = 'emails read';
+
+                    // Mark clicked email as read
+                    element.className = 'shadow p-3 mb-1 read border rounded';
                 }
+                fetch(`/emails/${emails['id']}`)
+                .then(response => response.json())
+                .then(email => {
+
+                    // Show clicked email
+                    read_email(email['sender'], email['recipients'], email['subject'], email['timestamp'], email['body'])
+                });
             });
             if (!emails['read']) {
-                element.className = 'emails unread';
+                element.className = 'shadow p-3 mb-1 rounded unread';
             }
             document.querySelector('#emails-view').append(element);
         });
@@ -83,10 +109,10 @@ function sendmail() {
     })
     .then(response => response.json())
     .then(result => {
-        // Print result
-        console.log(result);
+
+        // Open Sent mailbox
+        load_mailbox('sent')
     });
-    load_mailbox('sent')
 
     // Prevent default submission
     return false;
