@@ -23,11 +23,32 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  
+
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  show_mails(`${mailbox}`)
+}
+
+function show_mails(name) {
+    fetch('/emails/' + `${name}`)
+    .then(response => response.json())
+    .then(emails => {
+
+        //Create and append element for each email
+        emails.forEach(function(emails) {
+            const element = document.createElement('div');
+            element.style.border = '1px solid';
+            element.style.padding = '4px';
+            element.style.margin = '2px';
+            element.innerHTML = emails['sender'] + '  :  ' + emails['subject'] + '  :  ' + emails['timestamp'];
+            element.addEventListener('click', function() {
+                console.log('This element has been clicked!')
+            });
+            document.querySelector('#emails-view').append(element);
+        });
+    });
 }
