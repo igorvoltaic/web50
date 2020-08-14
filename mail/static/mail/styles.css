@@ -2,6 +2,30 @@ textarea {
     min-height: 400px;
 }
 
+@keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+        padding: 4px;
+        margin: 0 0 2px 0;
+    }
+    75% {
+        opacity: 0;
+        height: 100%;
+        line-height: 100%;
+        padding: 4px;
+        margin: 0 0 2px 0;
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+        line-height: 0px;
+        padding: 0px;
+        margin-bottom: 0px;
+    }
+}
+
 .emails {
     padding: 4px;
     margin: 0 0 2px 0;
@@ -10,8 +34,17 @@ textarea {
 
 .read {
     background: #e9ecef;
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
 }
 
 .unread {
     background: white;
+}
+
+.col-10 {
+    line-height: 2;
+    cursor: pointer;
 }
