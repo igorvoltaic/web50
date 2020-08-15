@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
     document.querySelector('#compose').addEventListener('click', compose_email);
     document.querySelector('#compose-form').onsubmit = sendmail;
-    // document.querySelectorAll('#archive').forEach(button => {button.onclick = archive_email});
 
     // By default, load the inbox
     load_mailbox('inbox');
@@ -30,17 +29,30 @@ function compose_email() {
     document.querySelector('#compose-body').value = '';
 }
 
-function read_email(sender, recipients, subject, timestamp, body) {
+function read_email(id) {
     document.querySelector('#emails-view').style.display = 'none';
     document.querySelector('#compose-view').style.display = 'none';
     document.querySelector('#reader-view').style.display = 'block';
 
-    // Clear out composition fields
-    document.querySelector('#reader-sender').innerHTML = `<b>From:</b> ${sender}`;
-    document.querySelector('#reader-recipients').innerHTML = `<b>To:</b> ${recipients}`;
-    document.querySelector('#reader-subject').innerHTML = `<b>Subject:</b> ${subject}`;
-    document.querySelector('#reader-timestamp').innerHTML = `<b>Timestamp:</b> ${timestamp}`;
-    document.querySelector('#reader-body').innerHTML = body;
+    fetch(`/emails/${id}`)
+    .then(response => response.json())
+    .then(email => {
+        // Reply an email
+        document.querySelector('#reply').addEventListener('click', () => { 
+            compose_email();
+            let body = ''
+            email['body'].split('\n').forEach(line => {body += (`> ${line}\n`)});
+            document.querySelector('#compose-recipients').value = `${email['sender']}`;
+            document.querySelector('#compose-subject').value = `Re: ${email['subject']}`;
+            document.querySelector('#compose-body').value = `On ${email['timestamp']} ${email['sender']} wrote:\n${body}`;
+        });
+        // Show email
+        document.querySelector('#reader-sender').innerHTML = `<b>From:</b> ${email['sender']}`;
+        document.querySelector('#reader-recipients').innerHTML = `<b>To:</b> ${email['recipients']}`;
+        document.querySelector('#reader-subject').innerHTML = `<b>Subject:</b> ${email['subject']}`;
+        document.querySelector('#reader-timestamp').innerHTML = `<b>Timestamp:</b> ${email['timestamp']}`;
+        document.querySelector('#reader-body').innerHTML = email['body'].replaceAll('\n', '<br>');
+    });
 }
 
 function load_mailbox(mailbox) {
@@ -68,72 +80,48 @@ function show_mails(mailbox) {
         //Create and append element for each email
         emails.forEach(emails => {
             const element = document.createElement('div');
-            element.className = 'shadow p-2 mb-1 read rounded border container';
-            if (mailbox === 'inbox' || mailbox === 'archive') {
-                if (emails['archived']) {
-                    element.innerHTML = `<div class="row"><div class="col-10">${emails['sender']}  ::  ${emails['subject']}  ::  ${emails['timestamp']}</div><button class="ml-5 btn btn-sm btn-outline-primary" id="archive">Unarchive</button></div>`;
-                } else {
-                    element.innerHTML = `<div class="row"><div class="col-10">${emails['sender']}  ::  ${emails['subject']}  ::  ${emails['timestamp']}</div><button class="ml-5 btn btn-sm btn-outline-primary" id="archive">Archive</button></div>`;
-                }
-            } else {
-                element.innerHTML = `<div class="row"><div class="col-10">${emails['sender']}  ::  ${emails['subject']}  ::  ${emails['timestamp']}</div></div>`;
-            }
-            element.children[0].children[0].addEventListener('click', function() {
+            element.className = 'shadow p-2 mb-1 read rounded border container hide';
+            const row = document.createElement('div')
+            row.className = 'row';
+            element.append(row)
+            const col = document.createElement('div')
+            col.className = 'col-10';
+            row.append(col)
+            col.innerHTML = `${emails['sender']}  ::  ${emails['subject']}  ::  ${emails['timestamp']}`;
+            col.addEventListener('click', function() {
                 if (!emails['read']) {
-                    fetch(`/emails/${emails['id']}`, {
-                        method: 'PUT',
-                        body: JSON.stringify({
-                            read: true
-                        })
-                    })
-
                     // Mark clicked email as read
+                    mark_read(emails['id'])
                     element.className = 'shadow p-2 mb-1 read border rounded';
                 }
-                fetch(`/emails/${emails['id']}`)
-                .then(response => response.json())
-                .then(email => {
-
-                    // Show clicked email
-                    read_email(email['sender'], email['recipients'], email['subject'], email['timestamp'], email['body'])
-                });
+                read_email(emails['id']);
             });
-            if (!emails['read']) {
-                element.className = 'shadow p-2 mb-1 rounded unread';
-            }
             if (mailbox === 'inbox' || mailbox === 'archive') {
-                element.children[0].children[1].addEventListener('click', function() {
+                const button = document.createElement('button');
+                button.className = 'ml-5 btn btn-sm btn-outline-primary'
+                button.id = 'archive'
+                if (emails['archived']) {
+                    button.innerHTML = 'Unarchive';
+                } else {
+                    button.innerHTML = 'Archive';
+                }
+                button.addEventListener('click', function() {
                     event.preventDefault()
                     if (!emails['archived']) {
-                        fetch(`/emails/${emails['id']}`, {
-                            method: 'PUT',
-                            body: JSON.stringify({
-                                archived: true
-                            })
-                        })
-                        .then(result => {
-                            element.style.animationPlayState = 'running';
-                            element.addEventListener('animationend', () => {
-                                element.remove();
-                                load_mailbox('inbox');
-                            })
-                        });
+                        archive_mail(emails['id'], true);
                     } else {
-                        fetch(`/emails/${emails['id']}`, {
-                            method: 'PUT',
-                            body: JSON.stringify({
-                                archived: false
-                            })
-                        })
-                        .then(result => {
-                            element.style.animationPlayState = 'running';
-                            element.addEventListener('animationend', () => {
-                                element.remove();
-                                load_mailbox('inbox');
-                            })
-                        });
+                        archive_mail(emails['id'], false);
                     }
+                    element.style.animationPlayState = 'running';
+                    element.addEventListener('animationend', () => {
+                        element.remove();
+                        load_mailbox('inbox');
+                    })
                 });
+                row.append(button)
+            }
+            if (!emails['read']) {
+                element.className = 'shadow p-2 mb-1 rounded unread';
             }
             document.querySelector('#emails-view').append(element);
         });
@@ -160,3 +148,20 @@ function sendmail() {
     return false;
 }
 
+function mark_read(email_id) {
+    fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            read: true
+        })
+    })
+}
+
+function archive_mail(email_id, state) {
+    fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: state
+        })
+    })
+}

@@ -34,6 +34,9 @@ textarea {
 
 .read {
     background: #e9ecef;
+}
+
+.hide {
     animation-name: hide;
     animation-duration: 2s;
     animation-fill-mode: forwards;
