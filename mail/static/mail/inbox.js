@@ -4,20 +4,23 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
     document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-    document.querySelector('#compose').addEventListener('click', compose_email);
+    document.querySelector('#compose').addEventListener('click', () => compose_email());
     document.querySelector('#compose-form').onsubmit = sendmail;
 
     // By default, load the inbox
     load_mailbox('inbox');
 });
 
-// window.onpopstate = function(event) {
-//     console.log(event.state.mailbox);
-//     load_mailbox(event.state.mailbox);
-// }
+window.onpopstate = () => {
+    if (event.state.mailbox !== 'compose') {
+        load_mailbox(event.state.mailbox, event)
+    } else {
+        compose_email(event)
+    }
+}
 
 
-function compose_email() {
+function compose_email(popstate) {
 
     // Show compose view and hide other views
     document.querySelector('#emails-view').style.display = 'none';
@@ -28,10 +31,15 @@ function compose_email() {
     document.querySelector('#compose-recipients').value = '';
     document.querySelector('#compose-subject').value = '';
     document.querySelector('#compose-body').value = '';
+
+    // If there is no popstate event add the current state to the history
+    if (!popstate) {
+        history.pushState({mailbox: 'compose'}, '', 'compose');
+    }
 }
 
 
-function load_mailbox(mailbox) {
+function load_mailbox(mailbox, popstate) {
 
     // Show the mailbox and hide other views
     document.querySelector('#emails-view').style.display = 'block';
@@ -41,11 +49,13 @@ function load_mailbox(mailbox) {
     // Show the mailbox name
     document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-    //fetch emails
+    // Fetch emails
     show_mails(mailbox)
 
-    // Add the current state to the history
-    // history.pushState({mailbox: mailbox}, "", `${mailbox}`);
+    // If there is no popstate event add the current state to the history
+    if (!popstate) {
+        history.pushState({mailbox: mailbox}, '', mailbox);
+    }
 }
 
 
