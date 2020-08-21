@@ -4,42 +4,38 @@
 <html lang="en">
     <head>
         <title>{% block title %}Social Network{% endblock %}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="{% static 'network/App.js' %}"></script>
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Network</a>
-          
-            <div>
-              <ul class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><strong>{{ user.username }}</strong></a>
+        <nav class="site-navigation">
+            <span>Network</span>
+            <script type='text/javascript'> 
+                const navLinks = [
+                    { title: 'All Posts', path: "{% url 'index' %}"},
+            {% if user.is_authenticated %}
+                    { title: 'Following', path: '#' },
+                    { title: 'Log Out', path: "{% url 'logout' %}"},
+                    { title: "{{ user.username|title }}", path: '#' }
+                ]
+            {% else %}
+                    { title: 'Log In', path: "{% url 'login' %}"},
+                    { title: 'Register', path: "{% url 'register' %}"}
+                ]
+            {% endif %}
+            </script>
+
+            <div id="navbar">
+                <ul>
+                    <li v-for="link in navLinks">
+                        <a v-bind:href="link.path">[[ link.title ]]</a>
                     </li>
-                {% endif %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Following</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
-                {% endif %}
-              </ul>
+                </ul>
             </div>
-          </nav>
+            <script src="{% static 'network/Navigation.js' %}"></script>
+        </nav>
         
         <div class="body">
             {% block body %}

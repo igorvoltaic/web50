@@ -1,5 +1,14 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+<script type='text/javascript'>
+</script>
+
+<div id="app">
+    <h1>[[ message ]]</h1>
+    
+    <h2>[[ greet() ]]</h2>
+</div>
+<script src="{% static 'network/App.js' %}"></script>
 {% endblock %}
