@@ -6,12 +6,40 @@
   justify-content: space-between;
   color: #444;
 }
-.site-navigation span {
+.site-navigation .menu-title {
   font-size: 22px;
   font-weight: 400;
   display: flex;
   align-items: center;
   margin-left: 30px;
+}
+.site-navigation ion-icon {
+  font-size: 36px;
+  width: 65px;
+  align-items: center;
+  cursor: pointer;
+  display: none;
+}
+.site-navigation .menu-content-container {
+  display: flex;
+  align-items: center;
+  padding-right: 30px;
+}
+.site-navigation .menu-content-container .avatar {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  border: 1px solid #ccc;
+  border-radius: 50% !important;
+  color: #f56a00;
+  background-color: #fde3cf;
+}
+.site-navigation .menu-content-container .menu-avatar-name {
+  font-size: 18px;
+  margin-left: 15px;
 }
 .site-navigation ul {
   height: 100%;
@@ -33,11 +61,28 @@
   color: #2997ff;
 }
 
-body {
+@media screen and (max-width: 900px) {
+  .site-navigation .menu-content-container {
+    width: 300px;
+    height: calc(100% - 65px);
+    background: white;
+    position: absolute;
+    top: 65px;
+    left: -330px;
+    transition: 300ms ease left;
+  }
+  .site-navigation .menu-content-container.active {
+    left: 0px;
+  }
+  .site-navigation ion-icon {
+    display: flex;
+  }
+}
+html body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: 500;
   margin: 0;
-  background-color: #f8f9f8;
+  background-color: #f8f9fa;
 }
 
 /*# sourceMappingURL=styles.css.map */

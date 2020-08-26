@@ -6,7 +6,7 @@
     justify-content: space-between;
     color: $text-color;
 
-    span {
+    .menu-title {
         font-size: 22px;
         font-weight: 400;
         display: flex;
@@ -14,6 +14,37 @@
         margin-left: 30px;
     }
 
+    ion-icon {
+        font-size: 36px;
+        width: 65px;
+        align-items: center;
+        cursor: pointer;
+        display: none;
+    }
+
+    .menu-content-container {
+        display: flex;
+        align-items: center;
+        padding-right: 30px;
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            border: 1px solid $border;
+            border-radius: 50% !important;
+            color: #f56a00; 
+            background-color: #fde3cf;
+        }
+
+        .menu-avatar-name {
+            font-size: 18px;
+            margin-left: 15px;
+        }
+    }
 
     ul {
         height: 100%;
@@ -34,6 +65,27 @@
             &:hover {
                 color: $text-link;
             }
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .site-navigation {
+        .menu-content-container {
+            width: 300px;
+            height: calc(100% - 65px);
+            background: white;
+            position: absolute;
+            top: 65px;
+            left: -330px;
+            transition: 300ms ease left;
+
+            &.active {
+                left: 0px;
+            }
+        }
+        ion-icon {
+            display: flex;
         }
     }
 }
