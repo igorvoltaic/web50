@@ -22,10 +22,16 @@
         display: none;
     }
 
+    #navbar {
+        display: flex;
+        align-items: center;
+    }
+
     .menu-content-container {
         display: flex;
         align-items: center;
         padding-right: 30px;
+        height: 100%;
 
         .avatar {
             width: 36px;
@@ -43,6 +49,17 @@
         .menu-avatar-name {
             font-size: 18px;
             margin-left: 15px;
+
+            a {
+                text-decoration: none;
+                padding: 0 20px 0 20px;
+                font-size: 20px;
+                color: $text-color;
+
+                &:hover {
+                    color: $text-link;
+                }
+            }
         }
     }
 
@@ -54,7 +71,7 @@
         display: flex;
         align-items: center;
         list-style-type: none;
-        margin-right: 20px;
+        padding: 0 20px 0 50px;
 
         a {
             text-decoration: none;
@@ -71,21 +88,52 @@
 
 @media screen and (max-width: 900px) {
     .site-navigation {
-        .menu-content-container {
-            width: 300px;
-            height: calc(100% - 65px);
-            background: white;
-            position: absolute;
-            top: 65px;
-            left: -330px;
-            transition: 300ms ease left;
+        #navbar {
+            .menu-content-container {
+                width: 300px;
+                height: calc(100% - 65px);
+                background: white;
+                position: absolute;
+                top: 65px;
+                left: -330px;
+                transition: 300ms ease left;
+                flex-direction: column-reverse;
+                padding: 0;
+                padding-left: 30px;
 
-            &.active {
-                left: 0px;
+                a {
+                    width: 100%;
+                    padding: 0;
+                }
+
+                li {
+                    height: 65px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                ul {
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    padding: 0;
+                    padding-top: 20px;
+                }
+
+                ul, li, .menu-avatar-container {
+                    width: 100%;
+                }
+
+                .menu-avatar-container {
+                    padding-top: 20px;
+                }
+
+                &.active {
+                    left: 0px;
+                }
             }
-        }
-        ion-icon {
-            display: flex;
+            ion-icon {
+                display: flex;
+            }
         }
     }
 }

@@ -25,22 +25,24 @@
             {% endif %}
             </script>
             <span class="menu-title">Network</span>
-            <div id="navbar" class="menu-content-container">
-                <ul>
-                    <li v-for="(e,index) in 3">
-                        <a v-bind:href="navLinks[index].path">[[ navLinks[index].title ]]</a>
-                    </li>
-                </ul>
-                <span v-if="navLinks.length === 4"> 
-                    <span class="avatar">
-                        <span class="avatar-text">[[ slice(navLinks[3].title) ]]</span>
+            <div id="navbar">
+                <div class="menu-content-container" :class="menuActive ? 'active' : ''">
+                    <ul>
+                        <li v-for="(e,index) in 3">
+                            <a v-bind:href="navLinks[index].path">[[ navLinks[index].title ]]</a>
+                        </li>
+                    </ul>
+                    <span v-if="navLinks.length === 4" class="menu-avatar-container"> 
+                        <span class="avatar">
+                            <span class="avatar-text">[[ slice(navLinks[3].title) ]]</span>
+                        </span>
+                        <span class="menu-avatar-name">
+                            <a v-bind:href="navLinks[3].path">[[ navLinks[3].title ]]</a>
+                        </span>
                     </span>
-                    <span class="menu-avatar-name">
-                        <a v-bind:href="navLinks[3].path">[[ navLinks[3].title ]]</a>
-                    </span>
-                </span>
+                </div>
+                <ion-icon name="menu-outline" @click="setMenuActive()"></ion-icon>
             </div>
-            <ion-icon name="menu-outline" @click="setMenuActive()"></ion-icon>
             <script src="{% static 'network/Navigation.js' %}"></script>
         </nav>
         

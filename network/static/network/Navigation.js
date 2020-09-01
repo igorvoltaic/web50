@@ -12,8 +12,7 @@ var navbar = new Vue({
             return(s.slice(0,1))
         },
         setMenuActive: function() {
-            // this.menuActive = !this.menuActive;
-            console.log(this.menuActive)
+            this.menuActive = !this.menuActive;
         }
     }
 });
