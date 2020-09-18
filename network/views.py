@@ -1,15 +1,19 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post
 
 
 def index(request):
     return render(request, "network/index.html")
 
+def posts(request):
+    # Get all posts from all users, with the most recent posts first
+    posts = Post.objects.order_by("-timestamp")
+    return JsonResponse([post.serialize() for post in posts], safe=False)
 
 def login_view(request):
     if request.method == "POST":

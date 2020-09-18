@@ -1,0 +1,58 @@
+{% load static %}
+
+{% block social-posts %}
+
+
+{# Vue tempaltes #}
+
+<script type="text/x-template" id="social-posts-template">
+    <div id="social-posts-template">
+        <section class="container home">
+            <social-posts-item 
+                v-for="post in posts" 
+                :post="post"
+                :key="post.id">
+            </social-posts-item>
+        </section>
+    </div>
+</script>
+
+<script type="text/x-template" id="social-posts-item-template">
+        <div class="row">
+            <small>[[ post.user ]], likes: [[ post.likes ]], [[ post.timestamp ]]</small>
+            <div>[[ post.body ]]</div>
+        </div>
+</script>
+
+
+{# Vue components code #}
+
+<script type="text/javascript">
+    let SocialPostsItemComponent = {
+        delimiters: ['[[',']]'],
+        template: '#social-posts-item-template',
+        props: ['post']
+    }
+
+
+    let SocialPostsComponent = {
+        template: '#social-posts-template',
+        components: {
+            'social-posts-item': SocialPostsItemComponent,
+        },
+        data() {
+            return {
+                posts: null,
+            }
+        },
+        created: function () {
+            fetch('/posts')
+            .then(response => response.json())
+            .then(result => {
+                this.posts = result;
+            })
+        }
+    }
+</script>
+
+{% endblock %}
