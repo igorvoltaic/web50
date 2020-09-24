@@ -8,30 +8,30 @@
 <script type='text/javascript'> 
     {% if user.is_authenticated %}
     const navLinks = [
-        { title: 'All Posts', path: "{% url 'index' %}"},
-        { title: 'Following', path: '#' },
-        { title: 'Log Out', path: "{% url 'logout' %}"},
-        { title: "{{ user.username }}", path: '#' }
+        { name: 'All Posts', path: "{% url 'index' %}", component: SocialPostsComponent },
+        { name: 'Following', path: '/' },
+        { name: 'Log Out', path: "{% url 'logout' %}", component: {created: function () {window.location.replace('/logout')}} },
+        { name: "{{ user.username }}", path: '/' }
     ]
     {% else %}
     const navLinks = [
-        { title: 'All Posts', path: "{% url 'index' %}"},
-        { title: 'Log In', path: "{% url 'login' %}"},
-        { title: 'Register', path: "{% url 'register' %}"}
+        { name: 'All Posts', path: "{% url 'index' %}", component: SocialPostsComponent },
+        { name: 'Log In', path: "{% url 'login' %}", component: LoginComponent },
+        { name: 'Register', path: "{% url 'register' %}", component: RegisterComponent }
     ]
     {% endif %}
 </script>
 
 
-{# Vue tempaltes #}
+{# Vue templates #}
 
 <script type="text/x-template" id="navbar-template">
     <nav class="site-navigation">
         <span class="menu-title">Network</span>
 
-        <div class="menu-content-container" :class="isActive ? 'active' : ''">
+        <div class="menu-content-container" :class="isActive ? 'active' : ''" @focusout="isActive = !isActive">
             <ul>
-                <navbar-link :key="link.title" v-for="link in links" :name="link"></navbar-link>
+                <navbar-link :key="link.title" v-for="link in links" :link="link"></navbar-link>
             </ul>
         </div>
 
@@ -41,7 +41,7 @@
 
 <script type="text/x-template" id="navbar-link-template">
     <li>
-        <a :href="name.path">[[ name.title ]]</a>
+        <router-link :to="{ path: link.path }">[[ link.name ]]</router-link>
     </li>
 </script>
 
@@ -49,10 +49,14 @@
 {# Vue components code #}
 
 <script type="text/javascript">
+    const router = new VueRouter({
+        routes: navLinks
+    })
+
     let NavbarLinkComponent = {
         delimiters: ['[[', ']]'],
         template: '#navbar-link-template',
-        props: ['name']
+        props: ['link']
     }
 
     let NavbarComponent = {
@@ -64,11 +68,6 @@
             return {
                 links: navLinks,
                 isActive: false
-            }
-        },
-        methods: {
-            slice: function(s) {
-                return(s.slice(0,1).toUpperCase())
             }
         }
     }

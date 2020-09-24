@@ -6,23 +6,33 @@
         <title>{% block title %}Social Network{% endblock %}</title>
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
         <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://unpkg.com/vue-router"></script>
         <script type="module" src="https://unpkg.com/ionicons@5.1.2/dist/ionicons/ionicons.esm.js"></script>
     </head>
     <body>
         <div id="app">
             <navbar></navbar>
-            <social-posts></social-posts>
+            <router-view />
         </div>
 
+
+        {% if not user.is_authenticated %}
+            {% block login %}{% endblock %}
+            {% include "network/login.html" %}
+            {% block register %}{% endblock %}
+            {% include "network/register.html" %}
+        {% endif %}
+
+
+        {% block social-posts %}{% endblock %}
+        {% include "network/vue-social-posts.html" %}
+        
 
         {% block navigation %}{% endblock %}
         {% include "network/vue-navigation.html" %}
 
-        
-        {% block social-posts %}{% endblock %}
-        {% include "network/vue-social-posts.html" %}
 
-        <script src={% static 'network/app.js' %}></script>
+        <script src="{% static 'network/app.js' %}"></script>
     </body>
 </html>

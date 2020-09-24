@@ -1,30 +1,55 @@
-{% extends "network/layout.html" %}
+{% load static %}
 
-{% block body %}
+{% block register %}
 
-    <h2>Register</h2>
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+{# Vue templates #}
 
-    <form action="{% url 'register' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+<script type="text/x-template" id="register-template">
+    <div class="container">
+
+        <div class="row">
+            <h2>Register</h2>
+
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
+
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="email" name="email" placeholder="Email Address">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="password" name="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+                </div>
+                <input class="btn btn-primary" type="submit" value="Register">
+            </form>
         </div>
-        <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Register">
-    </form>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+        <div class="row">
+            Already have an account? <router-link :to="{ path: loginPath }">Log In here.</router-link>
+        </div>
+    </div>
+</script>
+
+
+{# Vue components code #}
+
+<script type="text/javascript">
+    let RegisterComponent = {
+        delimiters: ['[[', ']]'],
+        template: '#register-template',
+        data() {
+            return { loginPath: "{% url 'login' %}" }
+        }
+    }
+</script>
 
 {% endblock %}

@@ -1,24 +1,45 @@
-{% extends "network/layout.html" %}
+{% load static %}
 
-{% block body %}
+{% block login %}
 
-    <h2>Login</h2>
+{# Vue templates #}
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+<script type="text/x-template" id="login-template">
+    <div class="container">
+        <div class="row">
+            <h2>Login</h2>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
 
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="password" name="password" placeholder="Password">
+                </div>
+                <input class="btn btn-primary" type="submit" value="Login">
+            </form>
         </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Login">
-    </form>
 
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+        <div class="row">
+            Don&#39;t have an account? <router-link :to="{ path: registerPath }">Register here</router-link>.
+        </div>
+    </div>
+</script>
+
+{# Vue components code #}
+
+<script type="text/javascript">
+    let LoginComponent = {
+        delimiters: ['[[', ']]'],
+        template: '#login-template',
+        data() {
+            return { registerPath: "{% url 'register' %}" }
+        }
+    }
+</script>
 
 {% endblock %}
