@@ -24,7 +24,11 @@
     <div class="row">
         <small>by <b>[[ post.username ]]</b>, [[ post.timestamp ]]</small>
         <div v-if="!isEditing">[[ post.body ]]
-            <div><ion-icon @click="like()"  name="heart-outline"></ion-icon>[[ post.likes ]]</div>
+            <div>
+                <ion-icon v-if="!isLiked" @click="like()"  name="heart-outline"></ion-icon>
+                <ion-icon v-else @click="like()"  name="heart"></ion-icon>
+                [[ post.likes ]]
+            </div>
         </div>
         <div v-if="isEditing">
             <textarea type="text" ref="post_body" :value="post.body"></textarea>
@@ -100,7 +104,7 @@
         data() {
             return {
                 isEditing: false,
-                isLiked: this.post.id in {{ post.id for post in user.likes_posts.all | make_list }} 
+                isLiked: this.post.liked 
             }
         },
         methods: {

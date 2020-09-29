@@ -28,7 +28,7 @@ def posts(request):
 
     # Get all posts from all users, with the most recent posts first
     posts = Post.objects.order_by("-timestamp")
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    return JsonResponse([post.serialize(request.user) for post in posts], safe=False)
 
 
 def login_view(request):

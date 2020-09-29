@@ -90,6 +90,7 @@
     flex-direction: column-reverse;
     padding: 0;
     padding-left: 30px;
+    z-index: 100;
   }
   .site-navigation .menu-content-container a {
     width: 100%;
