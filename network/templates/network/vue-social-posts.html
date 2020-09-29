@@ -8,6 +8,9 @@
 <script type="text/x-template" id="social-posts-template">
     <div>
         <section class="container home">
+{% if user.is_authenticated %}
+            <social-posts-compose />
+{% endif %}
             <social-posts-item 
                 v-for="post in posts" 
                 :post="post"
@@ -18,27 +21,111 @@
 </script>
 
 <script type="text/x-template" id="social-posts-item-template">
-        <div class="row">
-            <small>[[ post.user ]], likes: [[ post.likes ]], [[ post.timestamp ]]</small>
-            <div>[[ post.body ]]</div>
+    <div class="row">
+        <small>by <b>[[ post.username ]]</b>, [[ post.timestamp ]]</small>
+        <div v-if="!isEditing">[[ post.body ]]
+            <div><ion-icon @click="like()"  name="heart-outline"></ion-icon>[[ post.likes ]]</div>
         </div>
+        <div v-if="isEditing">
+            <textarea type="text" ref="post_body" :value="post.body"></textarea>
+        </div>
+
+        <button @click="isEditing = !isEditing" v-if="!isEditing && post.user_id === {{ user.id }}">Edit</button>
+        <button @click="save" v-else-if="isEditing">Save</button>
+        <button v-if="isEditing" @click="isEditing = false">Cancel</button>
+    </div>
 </script>
 
+{% if user.is_authenticated %}
+<script type="text/x-template" id="social-posts-compose-template">
+    <div id="compose-view" class="row">
+        <button v-if="!isNewPost" @click="isNewPost = !isNewPost">New Post</button>
+        <form @submit.prevent="newPost()" v-if="isNewPost" id="compose-form">
+            {% csrf_token %}
+            <div>
+                <textarea class="" id="compose-body" placeholder="Your post here" v-model="post.body"></textarea>
+            </div>
+            <button id="submit-btn" type="submit" class="">Submit</button>
+            <button v-if="isNewPost" @click="isNewPost = false">Cancel</button>
+        </form>
+    </div>
+</script>
+{% endif %}
 
 {# Vue components code #}
 
 <script type="text/javascript">
+{% if user.is_authenticated %}
+    let SocialPostsComposeComponent = {
+        delimiters: ['[[',']]'],
+        template: '#social-posts-compose-template',
+        data() {
+            return {
+                isNewPost: false,
+                post: {
+                    body: ''
+                }
+            }
+        },
+        methods: {
+            newPost: function() {
+                fetch('/posts', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }, 
+                    body: JSON.stringify({
+                        body: this.post.body
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    this.$parent.fetchPosts()
+                    this.isNewPost = false
+                    this.post.body = ''
+                });
+
+                // Prevent default submission
+                return false;
+            },
+        }
+    }
+{% endif %}
+
     let SocialPostsItemComponent = {
         delimiters: ['[[',']]'],
         template: '#social-posts-item-template',
-        props: ['post']
+        props: ['post'],
+        data() {
+            return {
+                isEditing: false,
+                isLiked: this.post.id in {{ post.id for post in user.likes_posts.all | make_list }} 
+            }
+        },
+        methods: {
+            save: function () {
+                this.post.body = this.$refs['post_body'].value,
+                this.isEditing = !this.isEditing
+            },
+            like: function () {
+                if (this.isLiked) {
+                    this.post.likes--
+                } else {
+                    this.post.likes++
+                }
+                this.isLiked = !this.isLiked
+            }
+        }
     }
-
 
     let SocialPostsComponent = {
         template: '#social-posts-template',
         components: {
-            'social-posts-item': SocialPostsItemComponent,
+{% if user.is_authenticated %}
+            'social-posts-compose': SocialPostsComposeComponent,
+{% endif %}
+            'social-posts-item': SocialPostsItemComponent
         },
         data() {
             return {
@@ -46,11 +133,16 @@
             }
         },
         created: function () {
-            fetch('/posts')
-            .then(response => response.json())
-            .then(result => {
-                this.posts = result;
-            })
+            this.fetchPosts()
+        },
+        methods: {
+            fetchPosts: function () {
+                fetch('/posts')
+                .then(response => response.json())
+                .then(result => {
+                    this.posts = result;
+                })
+            }
         }
     }
 </script>

@@ -5,6 +5,5 @@ new Vue({
     el: "#app",
     components: {
         navbar: NavbarComponent,
-        'social-posts': SocialPostsComponent
     }
 })

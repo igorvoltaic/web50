@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+import json
 
 from .models import User, Post
 
@@ -10,10 +11,25 @@ from .models import User, Post
 def index(request):
     return render(request, "network/index.html")
 
+
 def posts(request):
+    if request.method == "POST":
+        # Create a new post
+        data = json.loads(request.body)
+        body = data.get("body", "")
+        post = Post(
+            user=request.user,
+            body=body
+        )
+        post.save()
+
+        return JsonResponse({"message": "Post successfully created."},
+                            status=201)
+
     # Get all posts from all users, with the most recent posts first
     posts = Post.objects.order_by("-timestamp")
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
 
 def login_view(request):
     if request.method == "POST":
@@ -65,4 +81,3 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
-
