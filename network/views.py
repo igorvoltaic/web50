@@ -12,6 +12,17 @@ def index(request):
     return render(request, "network/index.html")
 
 
+def profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+    data = {
+        "followers_count": user.followers.count(),
+        "follow_count": user.follow.count(),
+        "followers_names": [user.username for user in user.followers.all()]
+        "follow_names": [user.username for user in user.follow.all()]
+     }
+    return JsonResponse(data)
+
+
 def posts(request):
     if request.method == "POST":
         # Create a new post
