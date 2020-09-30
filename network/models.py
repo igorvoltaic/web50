@@ -4,7 +4,8 @@ from django.db import models
 
 class User(AbstractUser):
     likes = models.ManyToManyField("Post", related_name="liked_by")
-    followers = models.ManyToManyField("self", related_name="follow")
+    followers = models.ManyToManyField("self", symmetrical=False,
+                                       related_name="follow")
 
     def valid_follow(self, user):
         if self.id == user.id:
