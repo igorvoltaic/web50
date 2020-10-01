@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 import json
@@ -13,10 +14,17 @@ def index(request):
 
 
 def profile(request, user_id):
+
+    # # Profile must be via GET or PUT
+    # if request.method != "PUT" or request.method != "GET":
+    #     return JsonResponse({
+    #         "error": "GET or PUT request required."
+    #     }, status=400)
+
     user = get_object_or_404(User, pk=user_id)
     if request.method == "PUT":
 
-        # Return error if user trie to follow self
+        # Return error if user tries to follow self
         if not user.valid_follow(request.user) or not request.user.is_authenticated:
             return JsonResponse({"message": "invalid follower."},
                                 status=400)
@@ -41,8 +49,35 @@ def profile(request, user_id):
         }
     return JsonResponse(data)
 
+def post(request, post_id):
+
+    # Editing or liking a post must be via PUT
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Must be logged in."}, status=400)
+
+
+    post = get_object_or_404(Post, pk=post_id)
+    data = json.loads(request.body)
+    if data.get("body") is not None:
+        post.body = data["body"]
+    if data.get("like") is not None:
+        post.liked_by.add(request.user)
+    if data.get("unlike") is not None:
+        post.liked_by.remove(request.user)
+    post.save()
+    return HttpResponse(status=204)
 
 def posts(request):
+
+    # # Posts must be via GET or POST
+    # if request.method != "POST" or request.method != "GET":
+    #     return JsonResponse({
+    #         "error": "GET or POST request required."
+    #     }, status=400)
+
     if request.method == "POST":
 
         # Create a new post
@@ -58,8 +93,8 @@ def posts(request):
 
     # Get all posts from all users, with the most recent posts first
     posts = Post.objects.order_by("-timestamp")
-    return JsonResponse([post.serialize(request.user) for post in posts],
-                        safe=False)
+    paginator = Paginator(posts, 10)
+    return JsonResponse([post.serialize(request.user) for post in posts], safe=False)
 
 
 def login_view(request):

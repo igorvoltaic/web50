@@ -1,9 +1,7 @@
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.test import Client
 
 from .models import Post, User
-from .views import profile
 
 
 class PostTestCase(TestCase):
@@ -43,6 +41,21 @@ class PostTestCase(TestCase):
         foo = User.objects.get(username="foo")
         self.assertFalse(foo.valid_follow(foo))
 
+    def test_post_like_unlike(self):
+        foo = User.objects.get(pk=1)
+        post = Post.objects.get(pk=1)
+        c = Client()
+        r = c.put(f"/posts/{post.id}")
+        self.assertEqual(r.status_code, 400)
+        r = c.post(f"/posts/{post.id}")
+        self.assertEqual(r.status_code, 400)
+
+        c.login(username='foo', password='123')
+        r = c.put(f"/posts/{foo.id}", '{ "like": "true" }')
+        self.assertEqual(r.status_code, 204)
+        r = c.put(f"/posts/{foo.id}", '{ "unlike": "true" }')
+        self.assertEqual(r.status_code, 204)
+
 
 class UserTestCase(TestCase):
 
@@ -68,42 +81,23 @@ class UserTestCase(TestCase):
         foo = User.objects.get(pk=1)
         c = Client()
         r = c.get(f"/profile/{foo.id}")
-        r404 = c.get("/profile/404")
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()["followers_names"], ["baz", "boo"])
         self.assertEqual(r.json()["followers_count"], 2)
         self.assertEqual(r.json()["follow_count"], 0)
         self.assertEqual(r.json()["follow_names"], [])
-        self.assertEqual(r404.status_code, 404)
+        r = c.get("/profile/404")
+        self.assertEqual(r.status_code, 404)
 
-    def test_add_follower(self):
+    def test_follow_unfollow(self):
         foo = User.objects.get(pk=1)
         c = Client()
         r = c.put(f"/profile/{foo.id}")
         self.assertEqual(r.status_code, 400)
+        c.login(username='baz', password='123')
+        r = c.put(f"/profile/{foo.id}")
+        self.assertIn("removed", r.json()['message'])
+        r = c.put(f"/profile/{foo.id}")
+        self.assertIn("added", r.json()['message'])
 
 
-class Loggedin_User_Test(TestCase):
-    def setUp(self):
-        # Every test needs access to the request factory.
-        self.factory = RequestFactory()
-        self.user = User.objects.create_user(username="test",
-                                             email="test@exmaple.com",
-                                             password="123")
-
-        foo = User.objects.create_user(username="foo", email="foo@exmaple.com",
-                                       password="123")
-        baz = User.objects.create_user(username="baz", email="baz@exmaple.com",
-                                       password="123")
-
-    def test_details(self):
-        # Create an instance of a GET request.
-        request = self.factory.put('/profile/2')
-
-        # logged-in user
-        request.user = self.user
-
-        # Test my_view() as if it were deployed at /customer/details
-        response = profile(request, 2)
-        # Use this syntax for class-based views.
-        self.assertEqual(response.status_code, 201)

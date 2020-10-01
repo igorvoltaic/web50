@@ -111,12 +111,42 @@
             save: function () {
                 this.post.body = this.$refs['post_body'].value,
                 this.isEditing = !this.isEditing
+                fetch(`/posts/${this.post.id}`, {
+                    method: 'PUT',
+                    credentials: 'same-origin',
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }, 
+                    body: JSON.stringify({
+                        body: this.post.body
+                    })
+                })
             },
             like: function () {
                 if (this.isLiked) {
                     this.post.likes--
+                    fetch(`/posts/${this.post.id}`, {
+                        method: 'PUT',
+                        credentials: 'same-origin',
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }, 
+                        body: JSON.stringify({
+                            unlike: true
+                        })
+                    })
                 } else {
                     this.post.likes++
+                    fetch(`/posts/${this.post.id}`, {
+                        method: 'PUT',
+                        credentials: 'same-origin',
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }, 
+                        body: JSON.stringify({
+                            like: true
+                        })
+                    })
                 }
                 this.isLiked = !this.isLiked
             }
