@@ -1,9 +1,13 @@
 Vue.config.ignoredElements = [/^ion-/]
 
+const router = new VueRouter({
+    routes: navLinks
+})
+
 new Vue({
     router,
     el: "#app",
     components: {
-        navbar: NavbarComponent,
+        navbar: () => import(staticFiles + "vue/navbar.js"),
     }
 })

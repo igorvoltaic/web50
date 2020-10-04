@@ -18,10 +18,23 @@ class PostTestCase(TestCase):
         p1 = Post.objects.create(user=foo, body="hello world")
         p2 = Post.objects.create(user=bar, body="test post")
 
+    def test_fetch_posts(self):
+        c = Client()
+        r = c.get("/posts")
+        self.assertEqual(200, r.status_code)
+
+        # posts go in reverse order. latest first
+        self.assertIn("test", r.json()[0]['body'])
+        self.assertIn("world", r.json()[1]['body'])
+
+        r = c.put("/posts")
+        self.assertEqual(400, r.status_code)
+
     def test_likes_count(self):
         p1 = Post.objects.get(pk=1)
         p2 = Post.objects.get(pk=2)
         foo = User.objects.get(pk=1)
+
         p1.liked_by.add(foo)
         p1.save()
         self.assertEqual(p1.liked_by.count(), 1)
@@ -30,6 +43,7 @@ class PostTestCase(TestCase):
     def test_followers_count(self):
         foo = User.objects.get(username="foo")
         bar = User.objects.get(username="bar")
+
         foo.followers.add(bar)
         foo.save()
         self.assertEqual(foo.followers.count(), 1)
@@ -45,12 +59,14 @@ class PostTestCase(TestCase):
         foo = User.objects.get(pk=1)
         post = Post.objects.get(pk=1)
         c = Client()
+
         r = c.put(f"/posts/{post.id}")
         self.assertEqual(r.status_code, 400)
         r = c.post(f"/posts/{post.id}")
         self.assertEqual(r.status_code, 400)
 
         c.login(username='foo', password='123')
+
         r = c.put(f"/posts/{foo.id}", '{ "like": "true" }')
         self.assertEqual(r.status_code, 204)
         r = c.put(f"/posts/{foo.id}", '{ "unlike": "true" }')

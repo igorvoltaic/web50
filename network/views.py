@@ -16,21 +16,30 @@ def index(request):
 def profile(request, user_id):
 
     # # Profile must be via GET or PUT
-    # if request.method != "PUT" or request.method != "GET":
-    #     return JsonResponse({
-    #         "error": "GET or PUT request required."
-    #     }, status=400)
+    if request.method not in ["PUT", "GET"]:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
 
     user = get_object_or_404(User, pk=user_id)
+
+    valid_follow = False
+    if user.valid_follow(request.user) and request.user.is_authenticated:
+        valid_follow = True
+
+    is_followed = False
+    if request.user.id in [user.id for user in user.followers.all()]:
+        is_followed = True
+
     if request.method == "PUT":
 
         # Return error if user tries to follow self
-        if not user.valid_follow(request.user) or not request.user.is_authenticated:
+        if not valid_follow:
             return JsonResponse({"message": "invalid follower."},
                                 status=400)
 
         # Add or remove a follower
-        if request.user.id not in [user.id for user in user.followers.all()]:
+        if not is_followed:
             user.followers.add(request.user)
             user.save()
             return JsonResponse({"message": "User follower added."},
@@ -42,12 +51,16 @@ def profile(request, user_id):
                                 status=201)
 
     data = {
+        "username": user.username,
+        "is_followed": is_followed,
+        "valid_follow": valid_follow,
         "followers_count": user.followers.count(),
         "follow_count": user.follow.count(),
         "followers_names": [user.username for user in user.followers.all()],
         "follow_names": [user.username for user in user.follow.all()]
-        }
+    }
     return JsonResponse(data)
+
 
 def post(request, post_id):
 
@@ -57,7 +70,6 @@ def post(request, post_id):
 
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Must be logged in."}, status=400)
-
 
     post = get_object_or_404(Post, pk=post_id)
     data = json.loads(request.body)
@@ -70,13 +82,14 @@ def post(request, post_id):
     post.save()
     return HttpResponse(status=204)
 
+
 def posts(request):
 
-    # # Posts must be via GET or POST
-    # if request.method != "POST" or request.method != "GET":
-    #     return JsonResponse({
-    #         "error": "GET or POST request required."
-    #     }, status=400)
+    # Posts must be via GET or POST
+    if request.method not in ["POST", "GET"]:
+        return JsonResponse({
+            "error": "GET or POST request required."
+        }, status=400)
 
     if request.method == "POST":
 
@@ -91,10 +104,36 @@ def posts(request):
         return JsonResponse({"message": "Post successfully created."},
                             status=201)
 
+    page_num = int(request.GET["page"])
+    try:
+        following = int(request.GET["follow"])
+    except KeyError:
+        following = False
+    try:
+        profile = int(request.GET["profile"])
+    except KeyError:
+        profile = False
+
+    # Get posts from followed users, with the most recent posts first
+    if following:
+        posts = Post.objects.filter(user__followers__id=request.user.id).order_by("-timestamp")
+    # Get all posts from a certain user users, with the most recent posts first
+    elif profile:
+        posts = Post.objects.filter(user_id=profile).order_by("-timestamp")
     # Get all posts from all users, with the most recent posts first
-    posts = Post.objects.order_by("-timestamp")
+    else:
+        posts = Post.objects.order_by("-timestamp")
+
     paginator = Paginator(posts, 10)
-    return JsonResponse([post.serialize(request.user) for post in posts], safe=False)
+    if not page_num:
+        page_num = 1
+    page = paginator.page(page_num)
+    data = {
+        "posts": [post.serialize(request.user) for post in page.object_list],
+        "has_next": page.has_next(),
+        "has_prev": page.has_previous()
+    }
+    return JsonResponse(data)
 
 
 def login_view(request):

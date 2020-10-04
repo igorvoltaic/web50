@@ -13,21 +13,39 @@
     <body>
         <div id="app">
             <navbar></navbar>
-            <router-view />
+            <transition name="fade" mode="out-in">
+                <router-view :key="$route.fullPath"></router-view>
+            </transition>
         </div>
 
+        {# Django variables section #}
+        {% block _variables %}{% endblock %}
+        {% include "network/_variables.html" %}
 
+        {# Vue routes section #}
+        {% block _routes %}{% endblock %}
+        {% include "network/_routes.html" %}
+
+
+        {# Load only needed Vue components based on auth #}
         {% if not user.is_authenticated %}
             {% block login %}{% endblock %}
             {% include "network/login.html" %}
             {% block register %}{% endblock %}
             {% include "network/register.html" %}
+        {% else %}
+            {% block social-posts-compose %}{% endblock %}
+            {% include "network/vue-social-posts-compose.html" %}
         {% endif %}
 
 
+        {# Rest of Vue components #}
         {% block social-posts %}{% endblock %}
         {% include "network/vue-social-posts.html" %}
         
+        {% block user-profile %}{% endblock %}
+        {% include "network/vue-user-profile.html" %}
+
 
         {% block navigation %}{% endblock %}
         {% include "network/vue-navigation.html" %}

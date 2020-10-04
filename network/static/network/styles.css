@@ -120,15 +120,84 @@
     display: flex;
   }
 }
+.follow-info {
+  display: flex;
+}
+.follow-info .followers {
+  border-right: 1px solid;
+}
+.follow-info .followers div {
+  padding-right: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  height: 1.2em;
+}
+.follow-info .followers ul {
+  padding-right: 0px;
+  height: 1.2em;
+}
+.follow-info .followers ul li {
+  padding-right: 10px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: right;
+}
+.follow-info .follow div {
+  padding-left: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  height: 1.2em;
+}
+.follow-info .follow ul {
+  padding-left: 10px;
+  height: 1.2em;
+}
+.follow-info .follow ul li {
+  padding-left: 0;
+  padding-top: 10px;
+  display: flex;
+  justify-content: left;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0;
+}
+
+.child-view {
+  position: absolute;
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.slide-left-enter, .slide-right-leave-active {
+  opacity: 0;
+  -webkit-transform: translate(30px, 0);
+  transform: translate(30px, 0);
+}
+
+.slide-left-leave-active, .slide-right-enter {
+  opacity: 0;
+  -webkit-transform: translate(-30px, 0);
+  transform: translate(-30px, 0);
+}
+
 html body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: 500;
   margin: 0;
   background-color: #f8f9fa;
+  color: #444;
 }
 
 h1 {
   font-size: 2rem;
+}
+
+h3 {
+  margin-top: 3em;
 }
 
 .container {
@@ -137,7 +206,12 @@ h1 {
 }
 
 .row {
-  margin: 4em 20px;
+  margin: 1.5em 20px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
 }
 
 .overlay::before {
@@ -149,6 +223,158 @@ h1 {
   bottom: 0;
   left: 0;
   background: linear-gradient(180deg, transparent 0%, transparent 18%, rgba(0, 0, 0, 0.8) 99%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+}
+.likes span {
+  margin-left: 5px;
+}
+
+input {
+  margin-bottom: 0.5em;
+  max-width: 100%;
+  flex: 1 0 auto;
+  outline: 0;
+  text-align: left;
+  line-height: 1.21428571em;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+  padding: 0.67857143em 1em;
+  background: #fff;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  color: rgba(0, 0, 0, 0.87);
+  border-radius: 0.28571429rem;
+  box-shadow: none;
+}
+
+.button {
+  background: #e0e1e2 none;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: inline-block;
+  min-height: 1em;
+  max-height: 24.48px;
+  outline: 0;
+  border: none;
+  vertical-align: baseline;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+  margin: 0 0.25em 0 0;
+  padding: 0.3em 1.5em 0.4em;
+  font-weight: 700;
+  line-height: 1em;
+  font-style: normal;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0.28571429rem;
+}
+
+.button.black {
+  background-color: #444;
+  color: #fff;
+}
+
+.edit {
+  font-size: 0.6rem;
+  padding: 0.2em 1.5em 0.2em;
+}
+
+#compose-view {
+  display: flex;
+}
+#compose-view #compose-form {
+  width: 80%;
+}
+#compose-view #compose-form .newpost.text {
+  display: flex;
+}
+#compose-view #compose-form .newpost.text textarea {
+  vertical-align: top;
+  margin: 0;
+  margin-bottom: 10px;
+  tap-highlight-color: rgba(255, 255, 255, 0);
+  padding: 0.75em 1em;
+  background: #fff;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  outline: 0;
+  color: #444;
+  border-radius: 0.28571429rem;
+  box-shadow: 0 0 0 0 transparent inset;
+  transition: color 0.1s ease, border-color 0.1s ease;
+  font-size: 1em;
+  line-height: 1.2857;
+  resize: vertical;
+  display: flex;
+  width: 100%;
+}
+
+.post textarea {
+  vertical-align: top;
+  margin: 0;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  tap-highlight-color: rgba(255, 255, 255, 0);
+  padding: 0.75em 1em;
+  background: #fff;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  outline: 0;
+  color: #444;
+  border-radius: 0.28571429rem;
+  box-shadow: 0 0 0 0 transparent inset;
+  font-size: 1em;
+  line-height: 1.2857;
+  resize: vertical;
+  display: flex;
+  width: 35%;
+}
+.post button {
+  font-size: 0.6rem;
+}
+.post .date {
+  display: inline-block;
+  float: none;
+  font-weight: 400;
+  font-size: 0.85714286em;
+  font-style: normal;
+  margin: 0 0 0 0.5em;
+  padding: 0;
+  color: #444;
+}
+.post .text {
+  padding: 0;
+  border-left: none;
+  font-size: 1.5em;
+  max-width: 500px;
+  line-height: 1.4285em;
+  margin: -0.2em 0 0.3em;
+  background: 0 0;
+  padding: 0;
+  color: #3c5e93;
+  font-weight: 200;
+}
+.post .user a {
+  text-decoration: none;
+  color: #444;
+}
+.post .user a:hover {
+  color: #2997ff;
+}
+
+ul {
+  height: 100%;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  padding: 0 20px 0 50px;
+}
+
+.follow {
+  display: inline-block;
 }
 
 /*# sourceMappingURL=styles.css.map */

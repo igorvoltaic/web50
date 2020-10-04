@@ -3,26 +3,6 @@
 {% block navigation %}
 
 
-{# Variables used in Vue components #}
-
-<script type='text/javascript'> 
-    {% if user.is_authenticated %}
-    const navLinks = [
-        { name: 'All Posts', path: "{% url 'index' %}", component: SocialPostsComponent },
-        { name: 'Following', path: '/' },
-        { name: 'Log Out', path: "{% url 'logout' %}", component: {created: function () {window.location.replace('/logout')}} },
-        { name: "{{ user.username }}", path: '/' }
-    ]
-    {% else %}
-    const navLinks = [
-        { name: 'All Posts', path: "{% url 'index' %}", component: SocialPostsComponent },
-        { name: 'Log In', path: "{% url 'login' %}", component: LoginComponent },
-        { name: 'Register', path: "{% url 'register' %}", component: RegisterComponent }
-    ]
-    {% endif %}
-</script>
-
-
 {# Vue templates #}
 
 <script type="text/x-template" id="navbar-template">
@@ -41,37 +21,12 @@
 
 <script type="text/x-template" id="navbar-link-template">
     <li>
-        <router-link :to="{ path: link.path }">[[ link.name ]]</router-link>
+        <router-link 
+            v-if="link.name === 'profile' && auth" 
+            :to="{ name: link.name, params: {id : currentUser.id, username: currentUser.name} }"
+        >[[ link.meta ]]</router-link>
+        <router-link v-else :to="{ name: link.name }">[[ link.meta ]]</router-link>
     </li>
 </script>
-
-
-{# Vue components code #}
-
-<script type="text/javascript">
-    const router = new VueRouter({
-        routes: navLinks
-    })
-
-    let NavbarLinkComponent = {
-        delimiters: ['[[', ']]'],
-        template: '#navbar-link-template',
-        props: ['link']
-    }
-
-    let NavbarComponent = {
-        template: '#navbar-template',
-        components: { 
-            'navbar-link': NavbarLinkComponent 
-        },
-        data() {
-            return {
-                links: navLinks,
-                isActive: false
-            }
-        }
-    }
-</script>
-
 
 {% endblock %}

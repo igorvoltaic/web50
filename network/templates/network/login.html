@@ -20,26 +20,14 @@
                 <div class="form-group">
                     <input class="form-control" type="password" name="password" placeholder="Password">
                 </div>
-                <input class="btn btn-primary" type="submit" value="Login">
+                <input class="button black" type="submit" value="Login">
             </form>
         </div>
 
         <div class="row">
-            Don&#39;t have an account? <router-link :to="{ path: registerPath }">Register here</router-link>.
+            Don&#39;t have an account? <router-link :to="{ name: 'register' }">Register here</router-link>.
         </div>
     </div>
-</script>
-
-{# Vue components code #}
-
-<script type="text/javascript">
-    let LoginComponent = {
-        delimiters: ['[[', ']]'],
-        template: '#login-template',
-        data() {
-            return { registerPath: "{% url 'register' %}" }
-        }
-    }
 </script>
 
 {% endblock %}

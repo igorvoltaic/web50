@@ -1,0 +1,38 @@
+{% load static %}
+
+{% block user-profile %}
+
+
+{# Vue templates #}
+
+<script type="text/x-template" id="user-profile-template">
+    <div class="container">
+        <div class="row">
+            <h2>[[ username ]]</h2>
+        </div>
+        <div class="row">
+            <button class="button black" v-if="validFollow && !isFollowed" @click="followUser()">Follow</button>
+            <button class="button" v-else-if="validFollow" @click="followUser()">Unfollow</button>
+        </div>
+        <div class="row follow-info">
+            <div class="followers">
+                <div>followers: [[ followersCount ]]</div>
+                <ul v-for="name in followersNames">
+                    <li>[[ name ]]</li> 
+                </ul>
+            </div>
+            <div class="follow">
+                <div>follow: [[ followCount]]</div>
+                <ul v-for="name in followNames">
+                    <li>[[ name ]]</li> 
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <h3>User&#39;s posts:</h3>
+        </div>
+        <social-posts :isProfile="($route.params.id).toString()"/>
+    </div>
+</script>
+
+{% endblock %}

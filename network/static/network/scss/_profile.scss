@@ -1,0 +1,40 @@
+.follow-info {
+    display: flex;
+    .followers {
+        border-right: 1px solid;
+        div {
+            padding-right: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid;
+            height: 1.2em;
+        }
+        ul {
+            padding-right: 0px;
+            height: 1.2em;
+            li {
+                padding-right: 10px;
+                padding-top: 10px;
+                display: flex;
+                justify-content: right;
+            }
+        }
+    }
+    .follow {
+        div {
+            padding-left: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid;
+            height: 1.2em;
+        }
+        ul {
+            padding-left: 10px;
+            height: 1.2em;
+            li {
+                padding-left: 0;
+                padding-top: 10px;
+                display: flex;
+                justify-content: left;
+            }
+        }
+    }
+}
