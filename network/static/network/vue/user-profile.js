@@ -4,12 +4,6 @@ export default {
     components: {
         'social-posts': () => import(staticFiles + "vue/social-posts.js")
     },
-    props: {
-        doFetchProfile: {
-            default: false,
-            type: Boolean
-        },
-    },
     data() {
         return {
             followersCount: null,

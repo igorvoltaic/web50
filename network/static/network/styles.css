@@ -160,7 +160,7 @@
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-enter, .fade-leave-active {
@@ -169,7 +169,7 @@
 
 .child-view {
   position: absolute;
-  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
 .slide-left-enter, .slide-right-leave-active {
@@ -228,6 +228,9 @@ h3 {
 .likes {
   display: flex;
   align-items: center;
+}
+.likes ion-icon {
+  cursor: pointer;
 }
 .likes span {
   margin-left: 5px;

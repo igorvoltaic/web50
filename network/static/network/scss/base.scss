@@ -47,6 +47,9 @@ h3 {
 .likes {
     display: flex;
     align-items: center;
+    ion-icon {
+        cursor: pointer;
+    }
     
     span {
         margin-left: 5px;

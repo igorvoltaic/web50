@@ -92,6 +92,9 @@ def posts(request):
         }, status=400)
 
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Please login."},
+                                status=400)
 
         # Create a new post
         data = json.loads(request.body)
@@ -116,6 +119,9 @@ def posts(request):
 
     # Get posts from followed users, with the most recent posts first
     if following:
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Please login."},
+                                status=400)
         posts = Post.objects.filter(user__followers__id=request.user.id).order_by("-timestamp")
     # Get all posts from a certain user users, with the most recent posts first
     elif profile:

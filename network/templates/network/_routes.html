@@ -8,19 +8,19 @@
     {% if user.is_authenticated %}
 
     const navLinks = [
-            { name: 'posts', meta: 'All Posts', path: "{% url 'index' %}", component: () => import(staticFiles + "vue/social-posts.js"), props: {doFetchPosts: true} },
-            { name: 'follow', meta: 'Following', path: '/following', component: () => import(staticFiles + "vue/social-posts.js"), props: {isFollowing: true, doFetchPosts: true} },
+            { name: 'posts', meta: 'All Posts', path: "{% url 'index' %}", component: () => import(staticFiles + "vue/social-posts.js")},
+            { name: 'follow', meta: 'Following', path: '/following', component: () => import(staticFiles + "vue/social-posts.js"), props: {isFollowing: true } },
             { name: 'logout', meta: 'Log Out', path: "{% url 'logout' %}", component: {created: function () {window.location.replace('/logout')}} },
-            { name: 'profile', meta: currentUser.name, path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js"), props: {doFetchProfile: true} }
+            { name: 'profile', meta: currentUser.name, path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js") }
     ]
 
     {% else %}
 
     const navLinks = [
-            { name: 'posts', meta: 'All Posts', path: "{% url 'index' %}", component: () => import(staticFiles + "vue/social-posts.js"), props: {doFetchPosts: true} },
+            { name: 'posts', meta: 'All Posts', path: "{% url 'index' %}", component: () => import(staticFiles + "vue/social-posts.js") },
             { name: 'login', meta: 'Log In', path: "{% url 'login' %}", component: () => import(staticFiles + "vue/login.js") },
             { name: 'register', meta: 'Register', path: "{% url 'register' %}", component: () => import(staticFiles + "vue/register.js") },
-            { name: 'profile', path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js"), props: {doFetchProfile: true} }
+            { name: 'profile', path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js") }
     ]
 
     {% endif %}

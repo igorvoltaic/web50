@@ -8,16 +8,16 @@
 <script type="text/x-template" id="social-posts-compose-template">
     <div id="compose-view" class="row">
         <button class="button black" v-if="!isNewPost" @click="isNewPost = !isNewPost">New Post</button>
-            <form @submit.prevent="newPost()" v-if="isNewPost" id="compose-form">
-                {% csrf_token %}
-                <div class="newpost text">
-                    <textarea class="" id="compose-body" placeholder="Your post here" v-model="post.body"></textarea>
-                </div>
-                <div>
-                    <button class="button black" id="submit-btn" type="submit">Submit</button>
-                    <button class="button" v-if="isNewPost" @click="isNewPost = false">Discard</button>
-                </div>
-            </form>
+        <form @submit.prevent="newPost()" v-if="isNewPost" id="compose-form">
+            {% csrf_token %}
+            <div class="newpost text">
+                <textarea class="" id="compose-body" placeholder="Your post here" v-model="post.body"></textarea>
+            </div>
+            <div>
+                <button class="button black" id="submit-btn" type="submit">Submit</button>
+                <button class="button" v-if="isNewPost" @click="isNewPost = false">Discard</button>
+            </div>
+        </form>
     </div>
 </script>
 

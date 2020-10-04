@@ -8,7 +8,7 @@
 <script type="text/x-template" id="social-posts-template">
     <div>
         <section class="container">
-            <social-posts-compose v-if="auth && !isProfile"/>
+            <social-posts-compose v-if="auth && $route.name === 'posts'"/>
             <social-posts-item 
                 v-for="post in posts" 
                 :post="post"
