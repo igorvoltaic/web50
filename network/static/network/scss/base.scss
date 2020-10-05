@@ -198,6 +198,16 @@ input {
         }
     }
 }
+
+.user {
+    text-decoration: none;
+    color: $text-color;
+
+    &:hover {
+        color: $text-link;
+    }
+}
+
 ul {
     height: 100%;
     margin-block-start: 0;

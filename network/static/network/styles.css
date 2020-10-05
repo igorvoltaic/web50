@@ -92,6 +92,9 @@
     padding-left: 30px;
     z-index: 100;
   }
+  .site-navigation .menu-content-container:focus {
+    outline: none;
+  }
   .site-navigation .menu-content-container a {
     width: 100%;
     padding: 0;
@@ -362,6 +365,14 @@ input {
   color: #444;
 }
 .post .user a:hover {
+  color: #2997ff;
+}
+
+.user {
+  text-decoration: none;
+  color: #444;
+}
+.user:hover {
   color: #2997ff;
 }
 

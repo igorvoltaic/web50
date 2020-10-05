@@ -25,9 +25,9 @@ export default {
             .then(result => {
                 this.username = result.username
                 this.followersCount = result.followers_count
-                this.followersNames = result.followers_names
+                this.followersNames = result.followers
                 this.followCount = result.follow_count
-                this.followNames = result.follow_names
+                this.followNames = result.follows
                 this.validFollow = result.valid_follow
                 this.isFollowed = result.is_followed
             });

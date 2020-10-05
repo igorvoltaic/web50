@@ -17,14 +17,28 @@
         <div class="row follow-info">
             <div class="followers">
                 <div>followers: [[ followersCount ]]</div>
-                <ul v-for="name in followersNames">
-                    <li>[[ name ]]</li> 
+                <ul v-for="user in followersNames">
+                    <li>
+                        <router-link 
+                            class="user" 
+                            :to="{ name: 'profile', params: {id: user.id, username: user.username } }"
+                        >
+                            [[ user.username ]]
+                        </router-link>
+                    </li> 
                 </ul>
             </div>
             <div class="follow">
-                <div>follow: [[ followCount]]</div>
-                <ul v-for="name in followNames">
-                    <li>[[ name ]]</li> 
+                <div>follows: [[ followCount]]</div>
+                <ul v-for="user in followNames">
+                    <li>
+                        <router-link 
+                            class="user" 
+                            :to="{ name: 'profile', params: {id: user.id, username: user.username } }"
+                        >
+                            [[ user.username ]]
+                        </router-link>
+                    </li> 
                 </ul>
             </div>
         </div>

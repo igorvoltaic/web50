@@ -57,8 +57,8 @@ def profile(request, user_id):
         "valid_follow": valid_follow,
         "followers_count": user.followers.count(),
         "follow_count": user.follow.count(),
-        "followers_names": [user.username for user in user.followers.all()],
-        "follow_names": [user.username for user in user.follow.all()]
+        "follows": [{"username": u.username, "id": u.id} for u in user.follow.all()],
+        "followers": [{"username": u.username, "id": u.id} for u in user.followers.all()],
     }
     return JsonResponse(data)
 

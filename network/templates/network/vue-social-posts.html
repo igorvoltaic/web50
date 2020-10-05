@@ -14,8 +14,8 @@
             :key="post.id">
         </social-posts-item>
         <div class="row center">
-            <button class="button" @click="pageNum++; fetchPosts(pageNum)" v-if="hasNext">Next</button>
             <button class="button" @click="pageNum--; fetchPosts(pageNum)" v-if="hasPrev">Prev</button>
+            <button class="button" @click="pageNum++; fetchPosts(pageNum)" v-if="hasNext">Next</button>
         </div>
     </section>
 </script>
