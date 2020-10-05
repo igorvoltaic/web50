@@ -9,5 +9,10 @@ export default {
             isFollowing: false,
             isActive: false
         }
-    }
+    },
+    watch: {
+        $route (from, to) {
+            this.isActive = false
+        }
+    },
 }

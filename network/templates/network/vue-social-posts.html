@@ -6,20 +6,18 @@
 {# Vue templates #}
 
 <script type="text/x-template" id="social-posts-template">
-    <div>
-        <section class="container">
-            <social-posts-compose v-if="auth && $route.name === 'posts'"/>
-            <social-posts-item 
-                v-for="post in posts" 
-                :post="post"
-                :key="post.id">
-            </social-posts-item>
-            <div class="row center">
-                <button class="button" @click="pageNum++; fetchPosts(pageNum)" v-if="hasNext">Next</button>
-                <button class="button" @click="pageNum--; fetchPosts(pageNum)" v-if="hasPrev">Prev</button>
-            </div>
-        </section>
-    </div>
+    <section class="container">
+        <social-posts-compose v-if="auth && $route.name === 'posts'"/>
+        <social-posts-item 
+            v-for="post in posts" 
+            :post="post"
+            :key="post.id">
+        </social-posts-item>
+        <div class="row center">
+            <button class="button" @click="pageNum++; fetchPosts(pageNum)" v-if="hasNext">Next</button>
+            <button class="button" @click="pageNum--; fetchPosts(pageNum)" v-if="hasPrev">Prev</button>
+        </div>
+    </section>
 </script>
 
 <script type="text/x-template" id="social-posts-item-template">

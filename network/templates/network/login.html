@@ -5,7 +5,7 @@
 {# Vue templates #}
 
 <script type="text/x-template" id="login-template">
-    <div class="container">
+    <section class="container">
         <div class="row">
             <h2>Login</h2>
             {% if message %}
@@ -27,7 +27,7 @@
         <div class="row">
             Don&#39;t have an account? <router-link :to="{ name: 'register' }">Register here</router-link>.
         </div>
-    </div>
+    </section>
 </script>
 
 {% endblock %}

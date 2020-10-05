@@ -6,7 +6,7 @@
 {# Vue templates #}
 
 <script type="text/x-template" id="user-profile-template">
-    <div class="container">
+    <section class="container">
         <div class="row">
             <h2>[[ username ]]</h2>
         </div>
@@ -32,7 +32,7 @@
             <h3>User&#39;s posts:</h3>
         </div>
         <social-posts :isProfile="($route.params.id).toString()"/>
-    </div>
+    </section>
 </script>
 
 {% endblock %}

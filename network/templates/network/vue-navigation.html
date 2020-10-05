@@ -9,9 +9,9 @@
     <nav class="site-navigation">
         <span class="menu-title">Network</span>
 
-        <div class="menu-content-container" :class="isActive ? 'active' : ''" @focusout="isActive = !isActive">
+        <div class="menu-content-container" :class="{active: isActive}">
             <ul>
-                <navbar-link :key="link.title" v-for="link in links" :link="link"></navbar-link>
+                <navbar-link @click="isActive = false" :key="link.title" v-for="link in links" :link="link"></navbar-link>
             </ul>
         </div>
 
