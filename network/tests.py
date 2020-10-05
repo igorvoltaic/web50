@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.test import Client
 
@@ -20,12 +21,11 @@ class PostTestCase(TestCase):
 
     def test_fetch_posts(self):
         c = Client()
-        r = c.get("/posts")
-        self.assertEqual(200, r.status_code)
+        r = c.get("/posts?page=1", HTTP_ACCEPT='application/json')
+        self.assertEqual(r.status_code, 200)
 
-        # posts go in reverse order. latest first
-        self.assertIn("test", r.json()[0]['body'])
-        self.assertIn("world", r.json()[1]['body'])
+        self.assertEqual(r.json()['posts'][0]['body'], "test post")
+        self.assertIn("world", r.json()['posts'][1]['body'])
 
         r = c.put("/posts")
         self.assertEqual(400, r.status_code)
