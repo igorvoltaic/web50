@@ -26,6 +26,8 @@
         {% block _routes %}{% endblock %}
         {% include "network/_routes.html" %}
 
+        <script src="{% static 'network/app.js' %}"></script>
+
 
         {# Load only needed Vue components based on auth #}
         {% if not user.is_authenticated %}
@@ -51,6 +53,5 @@
         {% include "network/vue-navigation.html" %}
 
 
-        <script src="{% static 'network/app.js' %}"></script>
     </body>
 </html>
