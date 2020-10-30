@@ -29,5 +29,5 @@ Design a Twitter-like social network website for making posts and following user
     - Using JavaScript, you should asynchronously let the server know to update the like count (as via a call to fetch) and then update the post’s like count displayed on the page, without requiring a reload of the entire page.
 
 
-[Screencast which demonstrates project’s functionality.]()
+[Screencast which demonstrates project’s functionality.](https://www.youtube.com/watch?v=HxUJjA86idM)
 
