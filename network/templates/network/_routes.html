@@ -20,7 +20,7 @@
             { name: 'posts', meta: 'All Posts', path: "{% url 'index' %}", component: () => import(staticFiles + "vue/social-posts.js") },
             { name: 'login', meta: 'Log In', path: "{% url 'login' %}", component: () => import(staticFiles + "vue/login.js") },
             { name: 'register', meta: 'Register', path: "{% url 'register' %}", component: () => import(staticFiles + "vue/register.js") },
-            { name: 'profile', path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js") }
+            { name: 'profile', path: '/profile/:id', component: () => import(staticFiles + "vue/user-profile.js") },
     ]
 
     {% endif %}

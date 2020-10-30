@@ -155,11 +155,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "network/login.html", {
-                "message": "Invalid username and/or password."
-            })
+            return HttpResponseRedirect("/#/login")  # redirect to vue route
+            # TODO: login failed message. something like redirect to '/#/login/failed'
+            # with additional prop to show the message
     else:
-        return render(request, "network/login.html")
+        return HttpResponseRedirect("/#/login")  # redirect to vue route
 
 
 def logout_view(request):
@@ -185,10 +185,10 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "network/register.html", {
-                "message": "Username already taken."
-            })
+            return HttpResponseRedirect("/#/register")  # redirect to vue route
+            # TODO: login failed message. something like redirect to '/#/register/failed'
+            # with additional prop to show the message "Username already taken."
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "network/register.html")
+        return HttpResponseRedirect("/#/register")  # redirect to vue route
