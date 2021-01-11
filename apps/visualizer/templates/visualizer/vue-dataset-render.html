@@ -1,0 +1,78 @@
+{% load static %}
+
+{% block dataset_render %}
+<script type="text/x-template" id="dataset-render-template">
+    <div id="home-container" class="ui container">
+        <div v-if="error" class="ui container red message">[[ error ]]</div>
+        <div class="dataset-render-header">
+            <div class="render-options">
+                <h1>[[ datasetInfo.name ]]</h1>
+                <dropdown-select 
+                 :items="datasetInfo.column_names"
+                 :name="'y'"
+                 v-model="plotDto.params.y" @input="updateHue">Y-axis
+                </dropdown-select>
+                <dropdown-select 
+                 :items="datasetInfo.column_names"
+                 :name="'x'"
+                 v-model="plotDto.params.x" @input="updateHue">X-axis
+                </dropdown-select>
+                <dropdown-select 
+                 :items="plot_types"
+                 v-model="plotDto.plot_type">Plot type
+                </dropdown-select>
+                <dropdown-select 
+                 :items="plotDto.columns"
+                 v-model="plotDto.params.hue">Hue
+                </dropdown-select>
+                <div id="height" class="ui labeled input">
+                    <label>
+                        Height in px
+                    </label>
+                    <input v-model="plotDto.height" type="text" placeholder="Default is 600px" name="height">
+                </div>
+                <div id="width" class="ui labeled input">
+                    <label>
+                        Width in px
+                    </label>
+                    <input v-model="plotDto.width" type="text" placeholder="Default is 600px" name="width">
+                </div>
+                <button @click="renderDataset" class="ui button green" type="submit">Render</button>
+                <button @click="resetDto" class="ui button">Reset</button>
+            </div>
+            <div id="rendered-plot" class="ui segment">
+                    <img v-if="plotImgPath" 
+                     @load="isLoading = false" 
+                     class="" 
+                     :class="{ hidden: isLoading }" 
+                     :src="plotImgPath">
+                <div v-if="isLoading" 
+                 class="ui active centered medium inline loader">
+                </div>
+            </div>
+        </div>
+		<div id="data-table" class="ui container">
+			<table class="ui celled striped table">
+				<thead>
+                    <tr>
+						<th v-for="column_name in datasetInfo.column_names" 
+                         class="center aligned">[[ column_name ]]</th> 
+					</tr> 
+                    <tr>
+						<th v-for="column_type in datasetInfo.column_types" 
+                         class="center aligned">[[ column_type ]]</th> 
+					</tr> 
+				</thead>
+			    <tbody>
+                    <dataset-editor-datarow
+                     v-for="row, index in rows" 
+                     v-if="index < 5"
+                     :key="row.index" 
+                     :data="row">
+					</dataset-editor-datarow>
+			  </tbody>
+			</table>
+		</div>
+    </div>
+</script>
+{% endblock %}

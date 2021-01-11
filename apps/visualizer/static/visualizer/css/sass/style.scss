@@ -1,0 +1,413 @@
+ @use "select";
+
+
+.hidden {
+    display: none !important;
+}
+
+
+#csv-config-menu {
+    position: absolute;
+    background-color: #fff;
+    height: 23em;
+    width: 40em;
+    top: 20em;
+    left: calc(50% - 20em);
+    border: #dedede 3px solid;
+    display: flex;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-shadow: 0px 3px 30px 5px #444;
+
+    div#csv-config-menu-header {
+        margin-bottom: 2em;
+    }
+
+    div.ui.labeled.input {
+        width: 60%;
+        margin-bottom: 1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        line-height: 2em;
+
+    }
+
+    #csv-config-menu-buttons {
+        margin-top: 1em;
+    }
+}
+
+.dataset-render-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    
+    h1 {
+        margin: 0;
+        margin-bottom: 0.7em;
+    }
+
+    div.render-options {
+        display: flex;
+        flex-direction: column;
+
+        label {
+            display: block;
+            font-weight: 900;
+            padding-left: 0.5em;
+            color: #444;
+        }
+
+        div.ui.labeled.input {
+            display: block;
+
+            input {
+                height: 2.5em;
+                padding: 0.5em;
+                margin-bottom: 0.7em;
+                width: 14em;
+            }
+        }
+
+        button {
+            margin-top: 1em;
+        }
+
+    }
+
+    div#rendered-plot {
+        max-width: 600px;
+        min-width: 600px;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    img {
+        max-width: 80%;
+        animation-name: show;
+        animation-duration: 3s;
+        animation-fill-mode: forwards;
+    }
+
+}
+
+.dataset-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    
+    h1 {
+        margin: 0;
+    }
+
+    p {
+        margin-right: 0.3em;
+    }
+
+    a {
+        cursor: pointer;
+    }
+}
+
+#editor-comment {
+    margin-bottom: 1em;
+    width: 50%;
+}
+
+div#site-header.item {
+    padding-right: 0 !important;
+}
+div#site-subheader.item {
+    padding-left: 0 !important;
+}
+
+div#home-container {
+
+    .message {
+		display: flex;
+		justify-content: center;
+		width: 80%;
+    }
+
+    form.ui.form {
+        padding-top: 4em;
+		display: flex;
+		justify-content: center;
+
+    div.field {
+        display: flex;
+        align-items: center;
+
+        input#upload-csv-file {
+            display: none;
+        }
+
+        label#upload-csv-file-label {
+            display: inline-block;
+            color: #444;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-right: 1em;
+            margin-left: 1em;
+            margin-bottom: 0;
+        }
+
+        div#pre-label-text {
+            display: inline-block;
+            color: #444;
+            font-weight: bold;
+            min-height: 1em;
+            font-size: 1rem;
+            margin-right: 1em;
+        }
+        
+    }
+    }
+
+	div#dataset-table {
+		width: 80%;
+		
+		form#search-form {
+			display: flex;
+			justify-content: left;
+		}
+		button {
+			padding: 7px 15px !important;
+		}
+		table {
+			border: 1px solid #444;
+            .datasetListRow:hover {
+                background-color: lightyellow;
+                cursor: pointer;
+
+            }
+			thead { 
+				tr { 
+					th{ 
+						&:last-child {
+							width: 12em;	
+						}
+						color: lightgray;
+						background-color: #444;
+						border-radius: 0;
+						border: 0;
+					}
+				}
+			}
+		}
+	}
+}
+
+div#data-table {
+
+    margin-bottom: 2em;
+    overflow-x: scroll;
+
+    table {
+
+        th.type-dropdown-cell {
+
+            margin: 0;
+            padding: 0;
+            height: 3em;
+
+            div {
+                width: 100%;
+                height: 100%;
+
+                label {
+                    display: none;
+                }
+
+                .select-dropdown {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    align-items: center;
+                    justify-content: space-around;
+                    height: 100%;
+                    min-width: 7em;
+                    margin: 0;
+
+                    i.icon {
+                        margin: 0;
+                        padding: 0;
+                        position: unset;
+                        padding-right: 0px;
+                        height: 100%;
+                        width: 20%;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .dropdown-default {
+                        justify-content: center;
+                        display: flex;
+                        width: 80%;
+                        height: 100%;
+                        align-items: center;
+                        color: rgb(68, 68, 68);
+                        padding-left: 1em;
+                    }
+
+                    .dropdown-menu {
+                        height: auto;
+                        width: auto;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+@keyframes show {
+    0% {
+        opacity: 0;
+        max-width: 0%;
+        height: auto;
+    }
+    25% {
+        opacity: 0;
+        max-width: 100%;
+        height: auto;
+    }
+    100% {
+        opacity: 1;
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .dataset-render-header {
+
+        div#rendered-plot {
+            max-width: 500px;
+            min-width: 500px;
+            min-height: 500px;
+        }
+
+    }
+}
+
+@media screen and (max-width: 767px) {
+   #rendered-plot {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        object-fit: scale-down;
+
+    }
+    .dataset-render-header {
+        display: flex;
+        flex-direction: column-reverse;
+        div.render-options {
+            button {
+                margin-right: 0;
+            }
+            div.ui.labeled.input {
+                input {
+                    width: 100%;
+                }
+            }
+        }
+        .select-dropdown {
+            width: 100%;
+            i {
+                right: 1.5em;
+            }
+        }
+    }
+
+    div#data-table {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    div#home-container {
+                button.ui:nth-child(4)
+                .ui.button
+
+        .message {
+            display: flex;
+            justify-content: center;
+            width: 80%;
+        }
+
+        form.ui.form {
+            display: flex;
+            flex-direction: column;
+            div.field {
+                display: flex;
+                flex-direction: column;
+                align-items: normal;
+                .pre-label-text {
+                    font-size: 1.5em;
+                    width: 100%;
+                    justify-content: center;
+                    display: flex;
+                    margin-left: 0;
+                    margin-right: 0;
+                    margin-bottom: 1em;
+                }
+
+                label#upload-csv-file-label {
+                    display: inline-block;
+                    color: #444;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    margin-right: 0;
+                    margin-left: 0;
+                    margin-bottom: 1em;
+                }
+
+                button {
+                    margin: 0;
+                }
+            }
+        }
+        div.red {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        div#dataset-table {
+            width: 80%;
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+
+            .ui.table [class*="right aligned"] { 
+                text-align: left !important; 
+            }
+            
+            form#search-form {
+                display: flex;
+                justify-content: left;
+            }
+            button {
+                padding: 7px 15px !important;
+            }
+            table {
+                border: 1px solid #444;
+                .datasetListRow:hover {
+                    background-color: lightyellow;
+                    cursor: pointer;
+
+                }
+                thead { 
+                    display: none;
+                }
+                button {
+                    width: 30%;
+                }
+            }
+        }
+    }
+}
